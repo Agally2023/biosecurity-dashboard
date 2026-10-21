@@ -3,7 +3,7 @@
 <link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#1b7a4e"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="Biosecurity"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="icon" href="icons/icon-192.png"><link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <title>Biosecurity & Hygiene Dashboard</title>
 <style>
-:root{--bg:#f0f7f3;--card:#fff;--ink:#17302b;--mut:#5b7068;--line:#dbe8e1;--g:#2e9d6b;--a:#e0a526;--r:#d0463b;--p:#1b7a4e;--sky:#1478a6}
+:root{--bg:#f0f7f3;--card:#fff;--ink:#17302b;--mut:#5b7068;--line:#dbe8e1;--g:#0E812E;--a:#CB8306;--r:#d0463b;--p:#1b7a4e;--sky:#1478a6}
 *{box-sizing:border-box}body{margin:0;font:15px/1.4 system-ui,sans-serif;background:var(--bg);color:var(--ink)}
 header{background:linear-gradient(120deg,#14633f,#1f8a5a 70%,#2a9d8f);color:#fff;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
 h1{margin:0;font-size:20px}header p{margin:2px 0 0;opacity:.85;font-size:13px}
@@ -506,10 +506,10 @@ function draw(){
 
 
 // ---------- weekly charts (computed from the log on every refresh, so new entries and new weeks appear automatically) ----------
-const COL={g:'#2e9d6b',a:'#e0a526',r:'#d0463b',n:'#c5d0ce'},INK='#17302b',AXC='#62767a',GRN='#0E812E',SKY='#00BDF0';
+const COL={g:'#0E812E',a:'#CB8306',r:'#d0463b',n:'#c5d0ce'},INK='#17302b',AXC='#62767a',GRN='#0E812E',SKY='#00BDF0';
 const START_WK=29; // every weekly graph starts at week 29 (Mon 13 Jul 2026), as in the Excel, and ends at the latest week that has data
-// Graph colours (green, ocean blue, orange, brown; the last two categories use a lighter tint of ocean blue and brown)
-const CC={'Floor Cleanliness':'#2e9d6b','Organisation':'#1478a6','Footbath Condition':'#e07b00','Hand Washing Compliance':'#8b5a2b','Foot Dipping Compliance':'#6bb8dc','Chemical Storage & Waste Disposal':'#c49a6c'};
+// Graph colours: Victory Farms palette only (Victory Green #0E812E, Kivu Blue #00BDF0, Victory Orange #CB8306) and darker shades of those three
+const CC={'Floor Cleanliness':'#0E812E','Organisation':'#00BDF0','Footbath Condition':'#CB8306','Hand Washing Compliance':'#095B22','Foot Dipping Compliance':'#0082A8','Chemical Storage & Waste Disposal':'#8E5C05'};
 const dash=c=>`<s style="display:inline-block;width:18px;border-top:2px dashed ${c};margin-right:5px;vertical-align:middle"></s>`;
 function weekly(rows){
  const ks=rows.map(r=>r.k).filter(k=>k>=START_WK),last=ks.length?Math.max(...ks):START_WK,ws=[];for(let w=START_WK;w<=last;w++)ws.push(w);
@@ -1056,8 +1056,8 @@ async function chOverall(P){const{c,x}=await frame(P.T.ovTitle,P.scope);const{ws
  const xs=i=>n>1?box.l+40+i*(box.r-box.l-80)/(n-1):(box.l+box.r)/2,pts=ov.map((o,i)=>o?{o,i,w:ws[i]}:null).filter(Boolean);
  if(!pts.length){noData(x);return c}
  const Y=plotAxes(x,P,ws,xs,box,'Overall rating (average of categories, %)');
- if(P.T.hasSel){const i=ws.findIndex(P.T.sel);if(i>=0){x.fillStyle='#1f9d6318';rr(x,xs(i)-30,box.t-6,60,box.b-box.t+12,12);x.fill()}}
- const gr=x.createLinearGradient(0,box.t,0,box.b);gr.addColorStop(0,'#1f9d6355');gr.addColorStop(1,'#1f9d6308');const runs=[];pts.forEach(p=>{const r=runs[runs.length-1];if(r&&(!P.T.day||p.i===r[r.length-1].i+1))r.push(p);else runs.push([p])}); // daily line breaks on days with no checks
+ if(P.T.hasSel){const i=ws.findIndex(P.T.sel);if(i>=0){x.fillStyle='#0E812E18';rr(x,xs(i)-30,box.t-6,60,box.b-box.t+12,12);x.fill()}}
+ const gr=x.createLinearGradient(0,box.t,0,box.b);gr.addColorStop(0,'#0E812E55');gr.addColorStop(1,'#0E812E08');const runs=[];pts.forEach(p=>{const r=runs[runs.length-1];if(r&&(!P.T.day||p.i===r[r.length-1].i+1))r.push(p);else runs.push([p])}); // daily line breaks on days with no checks
  x.fillStyle=gr;runs.forEach(r=>{x.beginPath();x.moveTo(xs(r[0].i),box.b);r.forEach(p=>x.lineTo(xs(p.i),Y(p.o.s)));x.lineTo(xs(r[r.length-1].i),box.b);x.fill()});
  x.strokeStyle=GRN;x.lineWidth=6;x.lineJoin='round';runs.forEach(r=>{x.beginPath();r.forEach((p,k)=>k?x.lineTo(xs(p.i),Y(p.o.s)):x.moveTo(xs(p.i),Y(p.o.s)));x.stroke()});
  pts.forEach(p=>{const X=xs(p.i),y=Y(p.o.s),sel=P.T.hasSel&&P.T.sel(p.w);x.fillStyle=GRN;x.strokeStyle='#fff';x.lineWidth=3;x.beginPath();x.arc(X,y,sel?13:10,0,7);x.fill();x.stroke();
@@ -1173,7 +1173,7 @@ function dailyChart(D,sel){const n=D.ws.length,Wd=640,H=250,l=44,r=10,t=14,b=46,
  o+=`<line x1="${l}" x2="${l}" y1="${t}" y2="${H-b}" stroke="${AXC}" stroke-width="1.3"/><line x1="${l}" x2="${Wd-r}" y1="${H-b}" y2="${H-b}" stroke="${AXC}" stroke-width="1.3"/>
  <text transform="rotate(-90)" x="${-(t+(H-t-b)/2)}" y="11" font-size="10" text-anchor="middle" fill="${AXC}">Overall score (%)</text><text x="${(l+Wd-r)/2}" y="${H-2}" font-size="10" text-anchor="middle" fill="${AXC}">Day (last ${n} days; tap a bar to open that day)</text>`;
  D.ws.forEach((k,i)=>{const v=D.ov[i],on=k===sel,wd=WD[new Date(k*DAY).getUTCDay()];
-  o+=`<g class="dyb" data-dk="${k}" style="cursor:pointer"><title>${h(dkLong(k))}: ${v?pct(v.s):'no checks logged'}</title><rect x="${X(i)-sl/2}" y="${t}" width="${sl}" height="${H-t-b+36}" fill="${on?'#1f9d6318':'transparent'}"/>`;
+  o+=`<g class="dyb" data-dk="${k}" style="cursor:pointer"><title>${h(dkLong(k))}: ${v?pct(v.s):'no checks logged'}</title><rect x="${X(i)-sl/2}" y="${t}" width="${sl}" height="${H-t-b+36}" fill="${on?'#0E812E18':'transparent'}"/>`;
   if(v){const hh=Math.max(3,(H-t-b)*v.s);o+=`<rect x="${X(i)-bw/2}" y="${H-b-hh}" width="${bw}" height="${hh}" rx="3" fill="${COL[cls(v.s)]}"${on?` stroke="${INK}" stroke-width="2"`:''}/><text x="${X(i)}" y="${H-b-hh-4}" font-size="${on?11:9}" font-weight="700" text-anchor="middle" fill="${INK}">${Math.round(v.s*100)}</text>`}
   else o+=`<text x="${X(i)}" y="${H-b-5}" font-size="9" text-anchor="middle" fill="${AXC}">–</text>`;
   o+=`<text x="${X(i)}" y="${H-b+13}" font-size="9" text-anchor="middle" fill="${on?INK:AXC}" font-weight="${on?700:400}">${wd}</text><text x="${X(i)}" y="${H-b+24}" font-size="7.5" text-anchor="middle" fill="${AXC}">${dkShort(k)}</text></g>`});
@@ -1281,7 +1281,7 @@ dxSync();
 $('rf').onclick=()=>{if(SB()&&READY)tick();else load()};boot();setInterval(()=>{if(!document.hidden)tick()},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&READY&&Date.now()-(window.LASTLOAD||0)>120000)tick()});
 
 // ---- web app: service worker + install button ----
-if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
+if('serviceWorker' in navigator&&/^https?:/.test(location.protocol)){const had=!!navigator.serviceWorker.controller;let rl=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!had||rl)return;rl=true;try{if(!STG.length&&!$('fn').value&&!$('fp').value)location.reload()}catch(e){}});window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
 let IP=null;window.addEventListener('beforeinstallprompt',e=>{e.preventDefault();IP=e;if($('inst'))return;const b=document.createElement('button');b.id='inst';b.className='btn';b.type='button';b.textContent='Install app';b.onclick=async()=>{b.remove();IP.prompt();try{await IP.userChoice}catch(x){}IP=null};const hd=document.querySelector('header');hd&&hd.appendChild(b)});
 window.addEventListener('appinstalled',()=>{const b=$('inst');b&&b.remove()});
 </script></body></html>
