@@ -234,10 +234,10 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div class="fg">
 <div><label>Date</label><input type="date" id="fd"></div>
 <div><label>Time</label><input type="time" id="ft"></div>
-<div><label>Location</label><select id="fl"></select></div>
-<div><label>Category</label><select id="fc"></select></div>
-<div><label>Item</label><select id="fi"></select></div>
-<div id="wr"><label>Rating</label><select id="fr"></select><div class="legend" id="hint"></div></div>
+<div><label>Location</label><select id="fl" autocomplete="off"></select></div>
+<div><label>Category</label><select id="fc" autocomplete="off"></select></div>
+<div><label>Item</label><select id="fi" autocomplete="off"></select></div>
+<div id="wr"><label>Rating</label><select id="fr" autocomplete="off"></select><div class="legend" id="hint"></div></div>
 <div id="wc" class="hide"><label>Compliance % from your observation (whole number 0&ndash;100, e.g. 73 for 8 of 11 people)</label><input type="number" id="fp" min="0" max="100" step="1" inputmode="numeric"><div class="legend" id="fpb"></div></div>
 <div><label>Evidence / source</label><select id="fs"></select><div class="legend" id="shint">Switches to Photo evidence when you attach pictures.</div></div></div>
 <div style="margin-top:12px"><label>Notes (photo caption, what you saw)</label><textarea id="fn" rows="2"></textarea></div>
@@ -335,7 +335,7 @@ async function enter(fresh){
   const p=await getProfile();
   if(!p){lockUi();av('wait','Account not set up','Your profile was not found. Please sign out and contact the administrator.');return}
   ME=p;if(p.status!=='active'){waitScreen(p);return}
-  document.body.classList.remove('locked');$('auth').classList.add('off');applyRole();READY=true;LASTACT=Date.now();
+  document.body.classList.remove('locked');$('auth').classList.add('off');applyRole();READY=true;try{syncItems()}catch(e){}LASTACT=Date.now();
   if(fresh)logEv('login',{});await load();if(ME.role==='admin')adminInit()
  }catch(e){lockUi();av(SES?'wait':'in',...(SES?['Could not connect','Could not reach the server right now. Check your internet and tap "Check again".']:[]));amsg(aFriendly(e))}}
 addEventListener('hashchange',()=>{if(/type=recovery/.test(location.hash))location.reload()});
@@ -375,7 +375,10 @@ $('f-np').onsubmit=async ev=>{ev.preventDefault();const f=ev.target,pw=$('n-pw')
   const p=await getProfile();ME=p;await enter(true);logEv('password_changed',{})}catch(e){amsg(aFriendly(e))}busy(f,false)};
 $('w-chk').onclick=()=>{if(SES)enter(true);else{av('in')}};$('w-so').onclick=()=>signOut();$('so').onclick=()=>signOut();
 const sbErr=async r=>{const e=new Error(`${r.status} ${(await r.text()).slice(0,160)}`);e.status=r.status;return e};
-async function sbGetAll(table,order){let out=[],from=0;for(;;){const r=await sbF(`/rest/v1/${table}?select=*&order=${order}&limit=1000&offset=${from}`);if(!r.ok)throw await sbErr(r);const j=await r.json();out=out.concat(j);if(j.length<1000)return out;from+=1000}}
+async function sbGetAll(table,order){const pg=async(o,cnt)=>{const r=await sbF(`/rest/v1/${table}?select=*&order=${order}&limit=1000&offset=${o}`,cnt?{headers:{Prefer:'count=exact'}}:{});if(!r.ok)throw await sbErr(r);return{j:await r.json(),n:+((r.headers.get('content-range')||'').split('/')[1])||0}};
+ const a=await pg(0,true);if(a.j.length<1000||(a.n&&a.n<=1000))return a.j;
+ if(!a.n){let out=a.j,o=1000;for(;;){const x=(await pg(o,false)).j;out=out.concat(x);if(x.length<1000)return out;o+=1000}}
+ const offs=[];for(let o=1000;o<a.n;o+=1000)offs.push(o);const rest=await Promise.all(offs.map(o=>pg(o,false)));return a.j.concat(...rest.map(x=>x.j))}
 async function sbInsert(table,list){const r=await sbF('/rest/v1/'+table,{method:'POST',headers:{'Content-Type':'application/json',Prefer:'return=minimal'},body:JSON.stringify(list)});if(!r.ok)throw await sbErr(r)}
 const toDb=r=>({log_date:String(r.Date).slice(0,10),log_time:r.Time||null,location:r.Location,category:r.Category||null,item:r.Item,rating:r.Rating||null,compliance:(r['Compliance %']===''||r['Compliance %']==null)?null:+r['Compliance %'],source:r.Source||null,notes:r.Notes||null});
 const fromDb=d=>({Date:d.log_date,Time:d.log_time||'',Location:d.location,Category:d.category||'',Item:d.item,Rating:d.rating||'','Compliance %':d.compliance==null?'':+d.compliance,Source:d.source||'',Notes:d.notes||'',_id:d.id,By:d.created_by_name||'',UpdatedBy:d.updated_by_name||'',UpdatedAt:d.updated_at||''});
@@ -387,7 +390,7 @@ const rk=r=>[String(r.Date).slice(0,10),r.Location,r.Item,r.Rating||'',r['Compli
 function migVis(){const n=getLocal().length;$('mig').classList.toggle('hide',!(SB()&&n));$('mig').textContent=`Move ${n} entries saved in this browser to the database`}
 let CONN={t:'',ok:false};
 async function load(){
- if(SB()&&!READY)return;
+ if(SB()&&!READY)return;window.LASTLOAD=Date.now();
  $('upd').textContent='Updated '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
  if(SB()){try{await flushPending();ROWS=(await sbGetAll('bio_log','log_date.asc,id.asc')).map(fromDb).concat(myP());const w=myP().length;
    CONN={t:'Connected to the Supabase database: every entry is stored permanently.'+(w?` ${w} entr${w>1?'ies are':'y is'} waiting to upload.`:''),ok:!w}}
@@ -590,18 +593,18 @@ function fpHint(){const v=$('fp').value.trim(),e=$('fpb');if(v===''){e.style.col
 $('fp').addEventListener('input',fpHint);
 function syncItem(){const t=type(),i=info($('fi').value);$('wc').classList.toggle('hide',t!=='c');$('wr').classList.toggle('hide',t==='c');
  $('fr').innerHTML=t==='y'?opt(['Yes','No']):BANDS.map(([n,r])=>`<option value="${n}">${n} (${r})</option>`).join('');
- $('hint').textContent=i[4]==='inv'?'Yes = standing water present (scores 0).':t==='g'?'Good 80\u2013100% \u00b7 Average 67\u201379% \u00b7 Bad 0\u201366%. Scored as Good = 100%, Average = 67%, Bad = 0%.':'';fpHint()}
+ $('hint').textContent=i[4]==='inv'?'Yes/No question. Yes = standing water present (scores 0).':t==='y'?'This item is a Yes / No question.':t==='g'?'Good 80\u2013100% \u00b7 Average 67\u201379% \u00b7 Bad 0\u201366%. Scored as Good = 100%, Average = 67%, Bad = 0%.':'';fpHint()}
 function syncItems(){const nofb=NOFB.includes($('fl').value),cur=$('fi').value;
  const list=IT.filter(i=>i[1]===$('fc').value&&!(nofb&&i[4]==='fb')).map(i=>i[0]);$('fi').innerHTML=opt(list);if(list.includes(cur))$('fi').value=cur;syncItem()}
 $('fl').innerHTML=opt(LOCS);$('fc').innerHTML=opt(CATS);$('fs').innerHTML=opt(SRC);$('fd').value=today();$('ft').value=nowT();syncItems();
-['fd','fl','fi','fr','fp'].forEach(id=>$(id).addEventListener('change',()=>{ACK=false}));$('fl').onchange=syncItems;$('fc').onchange=syncItems;$('fi').onchange=syncItem;
+['fd','fl','fi','fr','fp'].forEach(id=>$(id).addEventListener('change',()=>{ACK=false}));$('fl').onchange=syncItems;$('fc').onchange=syncItems;$('fi').onchange=syncItem;window.addEventListener('pageshow',()=>syncItems());
 async function save(list){
  if(SB()){try{await sbInsert('bio_log',list.map(toDb))}catch(e){if(e.status&&e.status<500)throw e;setPending(getPending().concat(list.map(r=>({...r,_uid:ME?ME.id:''}))));CONN={t:'No connection to the database right now. Your entries are kept on this device and will upload automatically when it is back (tap Refresh to retry).',ok:false}}}
  else if(CFG.DATA_URL)await fetch(CFG.DATA_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows:list})});
  else setLocal(getLocal().concat(list));
  ROWS=ROWS.concat(list);draw();if(CFG.DATA_URL)setTimeout(load,3000)}
 $('sb').onclick=async()=>{
- const t=type(),comp=$('fp').value.trim();
+ syncItems();const t=type(),comp=$('fp').value.trim();
  if(!$('fd').value||!$('ft').value)return $('fmsg').textContent='Enter date and time.';
  if(t==='c'&&!/^\d{1,3}$/.test(comp)||t==='c'&&+comp>100)return $('fmsg').textContent='Enter the compliance % as a whole number from 0 to 100 ('+RNG+').';
  const raw={Date:$('fd').value,Time:$('ft').value,Location:$('fl').value,Category:$('fc').value,Item:$('fi').value,
@@ -762,10 +765,22 @@ let PH=[],STG=[];const OU={},ou=(k,b)=>OU[k]??(OU[k]=URL.createObjectURL(b));
 const pkey=p=>[String(p.Date).slice(0,10),p.Time||'',p.Location,p.Item||''].join('|'),ck=r=>[String(r.Date).slice(0,10),r.Time||'',r.Location,r.Item||''].join('|');
 const IDB=()=>new Promise((res,rej)=>{try{const q=indexedDB.open('bhphotos',1);q.onupgradeneeded=()=>q.result.createObjectStore('p',{keyPath:'id'});q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)}catch(e){rej(e)}});
 const idb=async(mode,fn)=>{const d=await IDB();return new Promise((res,rej)=>{const t=d.transaction('p',mode),r=fn(t.objectStore('p'));t.oncomplete=()=>res(r&&r.result);t.onerror=()=>rej(t.error)})};
+const jpgBlob=(c,q)=>new Promise((res,rej)=>c.toBlob(b=>{c.width=c.height=0;b?res(b):rej(new Error('encode'))},'image/jpeg',q));
+// Fallback decoder for browsers without createImageBitmap options.
 const shrink=(file,max,q)=>new Promise((res,rej)=>{const img=new Image(),u=URL.createObjectURL(file);
  img.onload=()=>{const k=Math.min(1,max/Math.max(img.width,img.height)),c=document.createElement('canvas');c.width=Math.round(img.width*k);c.height=Math.round(img.height*k);
-  c.getContext('2d').drawImage(img,0,0,c.width,c.height);URL.revokeObjectURL(u);c.toBlob(b=>b?res(b):rej(new Error('encode')),'image/jpeg',q)};
+  c.getContext('2d').drawImage(img,0,0,c.width,c.height);img.src='';URL.revokeObjectURL(u);jpgBlob(c,q).then(res,rej)};
  img.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('load'))};img.src=u});
+// Low-memory path: the browser decodes the picture straight to a small size (a 12 MP phone photo is never held in full), then the thumbnail is cut from that small copy.
+async function shrinkBoth(file,max,tmax){
+ if(typeof createImageBitmap==='function'){
+  try{
+   const bm=await createImageBitmap(file,{resizeWidth:max,resizeQuality:'medium',imageOrientation:'from-image'});
+   const k=Math.min(1,max/Math.max(bm.width,bm.height)),w=Math.round(bm.width*k),hh=Math.round(bm.height*k),c=document.createElement('canvas');c.width=w;c.height=hh;c.getContext('2d').drawImage(bm,0,0,w,hh);
+   const t=Math.min(1,tmax/Math.max(w,hh)),c2=document.createElement('canvas');c2.width=Math.round(w*t);c2.height=Math.round(hh*t);c2.getContext('2d').drawImage(bm,0,0,c2.width,c2.height);bm.close&&bm.close();
+   return{full:await jpgBlob(c,.72),thumb:await jpgBlob(c2,.7)}
+  }catch(e){}}
+ const full=await shrink(file,max,.72);return{full,thumb:await shrink(full,tmax,.7)}}
 const b64=b=>new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=rej;r.readAsDataURL(b)});
 const thumbSrc=p=>p.local||p.pu||(p.thumb?ou(p.id+'t',p.thumb):`https://drive.google.com/thumbnail?id=${p.FileId}&sz=w400`);
 const fullSrc=p=>p.local||p.pu||(p.blob?ou(p.id,p.blob):`https://drive.google.com/thumbnail?id=${p.FileId}&sz=w1600`);
@@ -773,10 +788,10 @@ const cap=p=>[String(p.Date).slice(0,10),p.Time,p.Location,p.Item].filter(Boolea
 async function signPaths(ps){const m={};for(let i=0;i<ps.length;i+=100){const c=ps.slice(i,i+100);try{const r=await sbF('/storage/v1/object/sign/biosecurity-photos',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expiresIn:21600,paths:c})});if(r.ok)(await r.json()).forEach(x=>{if(x.signedURL)m[x.path]=sbU('/storage/v1'+x.signedURL)})}catch(e){}}return m}
 async function sbPhotos(){const rows=await sbGetAll('bio_photos','id.asc'),m=await signPaths(rows.map(d=>d.file_path).filter(Boolean));
  return rows.map(d=>({Date:d.log_date,Time:d.log_time||'',Location:d.location,Item:d.item||'',Note:d.note,id:d.id,pu:m[d.file_path]||'',By:d.created_by_name||'',ts:Date.parse(d.created_at)||0}))}
-async function loadPhotos(){
+let PSIG='';async function loadPhotos(){
  try{PH=SB()?await sbPhotos():CFG.DATA_URL?await (await fetch(CFG.DATA_URL+(CFG.DATA_URL.includes('?')?'&':'?')+'photos=1')).json():(await idb('readonly',s=>s.getAll()))||[];$('pmsg').textContent=''}
  catch(e){try{PH=(await idb('readonly',s=>s.getAll()))||[]}catch(x){PH=[]}$('pmsg').textContent=(CFG.DATA_URL||SB())?'Could not load shared photos right now.':''}
- drawPhotos();draw()}
+ const sig=PH.length+'|'+PH.reduce((a,p)=>a+(p.id||0),0);drawPhotos();if(sig!==PSIG){PSIG=sig;draw()}}
 function drawPhotos(){
  const l=$('gl').value,i=$('gi').value,list=PH.filter(p=>(l==='All locations'||p.Location===l)&&(i==='All items'||p.Item===i))
   .sort((a,b)=>String(b.Date).localeCompare(String(a.Date))||(b.ts||0)-(a.ts||0));
@@ -802,10 +817,11 @@ async function stagePhotos(files){
  if(!fl.length)return $('fmsg').textContent='No pictures selected.';
  let bad=0;
  for(const f of fl){if(STG.length>=6){$('fmsg').textContent='Maximum 6 photos per check.';break}
-  try{const full=await shrink(f,1280,.72),thumb=await shrink(f,360,.7);STG.push({full,thumb,url:URL.createObjectURL(thumb)})}catch(e){bad++}}
+  try{const {full,thumb}=await shrinkBoth(f,1280,360);STG.push({full,thumb,url:URL.createObjectURL(thumb)})}catch(e){bad++}
+  await new Promise(r=>setTimeout(r,30))}
  ACK=false;drawStage();
  if(STG.length&&$('fs').value!=='Self-reported (WhatsApp)')$('fs').value='Photo evidence';
- if(bad)$('fmsg').textContent=`${bad} picture${bad>1?'s':''} could not be read (unsupported format).`}
+ if(bad)$('fmsg').textContent=`${bad} picture${bad>1?'s':''} could not be added (unsupported format, or the phone ran low on memory). Close other apps and add photos one at a time.`}
 async function savePhoto(r,s,n){
  const m={Date:r.Date,Time:r.Time,Location:r.Location,Item:r.Item},nm=[r.Date,r.Location,r.Item].join('_').replace(/[^\w-]+/g,'-')+'_'+Date.now()+'-'+n+'.jpg';
  if(SB()){const path=r.Date+'/'+nm,up=await sbF('/storage/v1/object/biosecurity-photos/'+encodeURI(path),{method:'POST',headers:{'Content-Type':'image/jpeg'},body:s.full});
@@ -1250,7 +1266,7 @@ $('dx-go').onclick=async()=>{const a=dxRows(),f=$('dx-f').value,t=$('dx-t').valu
   if(!r.ok)throw new Error(j.message||('Error '+r.status));$('dx-c').value='';await load();if(AD.ready)loadLog(true);dxSync();$('dx-o').textContent=`Deleted ${j.deleted} entr${j.deleted===1?'y':'ies'}. The backup file was downloaded.`}
  catch(x){$('dx-o').style.color=COL.r;$('dx-o').textContent='Could not delete: '+x.message;dxSync()}};
 dxSync();
-$('rf').onclick=()=>{if(SB()&&READY)tick();else load()};boot();setInterval(tick,300000);
+$('rf').onclick=()=>{if(SB()&&READY)tick();else load()};boot();setInterval(()=>{if(!document.hidden)tick()},300000);document.addEventListener('visibilitychange',()=>{if(!document.hidden&&READY&&Date.now()-(window.LASTLOAD||0)>120000)tick()});
 
 // ---- web app: service worker + install button ----
 if('serviceWorker' in navigator&&/^https?:/.test(location.protocol))window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));
