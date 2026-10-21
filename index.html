@@ -506,7 +506,7 @@ function draw(){
 
 
 // ---------- weekly charts (computed from the log on every refresh, so new entries and new weeks appear automatically) ----------
-const COL={g:'#2e9d6b',a:'#e0a526',r:'#d0463b',n:'#c5d0ce'},INK='#17302b',AXC='#62767a',GRN='#1f9d63',SKY='#1478a6';
+const COL={g:'#2e9d6b',a:'#e0a526',r:'#d0463b',n:'#c5d0ce'},INK='#17302b',AXC='#62767a',GRN='#0E812E',SKY='#00BDF0';
 const START_WK=29; // every weekly graph starts at week 29 (Mon 13 Jul 2026), as in the Excel, and ends at the latest week that has data
 // Graph colours (green, ocean blue, orange, brown; the last two categories use a lighter tint of ocean blue and brown)
 const CC={'Floor Cleanliness':'#2e9d6b','Organisation':'#1478a6','Footbath Condition':'#e07b00','Hand Washing Compliance':'#8b5a2b','Foot Dipping Compliance':'#6bb8dc','Chemical Storage & Waste Disposal':'#c49a6c'};
@@ -915,7 +915,7 @@ $('aib').onclick=async()=>{
 
 // ---------- REPORT TAB: PNG graphs + slides (PNG and PowerPoint), built in the browser from the live log ----------
 const RP={items:[],urls:[],busy:false};
-const FF='system-ui,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',fnt=(s,w)=>`${w||400} ${s}px ${FF}`;
+const FF='Calibri,Carlito,"Segoe UI",Roboto,Helvetica,Arial,sans-serif',fnt=(s,w)=>`${w||400} ${s}px ${FF}`;
 const rl=s=>s==null?'No data':{g:'Good',a:'Average',r:'Bad'}[cls(s)];
 const arrow=d=>d>=.005?'up '+Math.round(d*100)+'%':d<=-.005?'down '+Math.round(-d*100)+'%':'unchanged';
 const slug=t=>String(t).replace(/[^A-Za-z0-9]+/g,'_').replace(/^_|_$/g,'');
@@ -1012,20 +1012,32 @@ function pointsCat(P,g){const o=[],a=P.sr.filter(r=>r.g===g),s=avg(a);let prev=n
  const np=a.filter(r=>photoOf(P,r)).length;o.push(`${a.length} rating${a.length===1?'':'s'} logged; ${np} with photo evidence.`);return o}
 
 // ---- chart drawing (canvas, 1600 x 900) ----
-let LOGO=null;
+const VFG='#0E812E',VFB='#00BDF0',VFO='#CB8306';
+let LOGO=null;const VFI={};
+async function vfImg(k){if(!(k in VFI)){try{const r=await fetch('assets/'+k);if(!r.ok)throw 0;VFI[k]=await loadImg(URL.createObjectURL(await r.blob()))}catch(e){VFI[k]=null}}return VFI[k]}   // via fetch + blob so the canvas is never tainted; missing file = wordmark fallback
+// Victory Farms wordmark fallback (used when the logo file is not available, e.g. the single-file copy)
+function vfWord(x,X,Y,hh,white,R){x.save();x.textBaseline='alphabetic';x.font=`700 ${hh}px Impact,"Arial Narrow",Calibri,sans-serif`;if(R){X=R-x.measureText('VICTORY').width-x.measureText('FARMS').width-4}x.fillStyle=white?'#fff':VFG;x.fillText('VICTORY',X,Y);const w=x.measureText('VICTORY').width;x.fillStyle=white?'#fff':VFB;x.fillText('FARMS',X+w+4,Y);x.restore()}
+// Page layout follows the Victory Farms PPT template: white page, green left-aligned title, thin rule, logo bottom-left, "Victory Farms Confidential" centred.
 async function frame(title,sub,iconTile){
  if(!LOGO)LOGO=await loadImg(document.querySelector('.logo img').src);
- const[c,x]=mkc(1600,900);x.fillStyle='#fff';x.fillRect(0,0,1600,900);
- const g=x.createLinearGradient(0,0,1600,0);g.addColorStop(0,'#0f5a3a');g.addColorStop(.45,'#1a7f56');g.addColorStop(1,'#1478a6');x.fillStyle=g;x.fillRect(0,0,1600,128);
- x.fillStyle='#ffffff2a';x.beginPath();x.moveTo(0,112);for(let i=0;i<=16;i++)x.quadraticCurveTo(i*100+25,98,i*100+50,112),x.quadraticCurveTo(i*100+75,126,i*100+100,112);x.lineTo(1600,128);x.lineTo(0,128);x.fill();
- if(LOGO){const[w,wx]=mkc(300,300);wx.drawImage(LOGO,0,0,300,300);wx.globalCompositeOperation='source-in';wx.fillStyle='#fff';wx.fillRect(0,0,300,300);x.save();x.beginPath();x.rect(0,0,1600,128);x.clip();x.globalAlpha=.12;x.drawImage(w,1090,-34,200,200);x.restore()}
- x.strokeStyle='#ffffff22';x.lineWidth=7;x.beginPath();x.arc(84,62,60,0,7);x.stroke();x.strokeStyle='#ffffff66';x.lineWidth=3;x.beginPath();x.arc(84,62,52,0,7);x.stroke();
- const bg=x.createRadialGradient(72,50,4,84,62,48);bg.addColorStop(0,'#fff');bg.addColorStop(1,'#e9f6ee');x.fillStyle=bg;x.beginPath();x.arc(84,62,46,0,7);x.fill();if(LOGO)x.drawImage(LOGO,84-33,62-33,66,66);
- x.fillStyle='#fff';x.font=fnt(40,700);x.textBaseline='alphabetic';x.fillText(fit(x,title,iconTile?1220:1380),150,70);
- x.font=fnt(22);x.fillStyle='#ffffffe6';x.fillText(fit(x,sub,iconTile?1220:1380),150,104);
- if(iconTile){const col=iconTile.col,im=await iconImg(iconTile.n,'#fff',54),gr=x.createLinearGradient(1440,20,1540,110);gr.addColorStop(0,sh(col,.35));gr.addColorStop(1,sh(col,-.25));x.fillStyle=gr;rr(x,1450,16,88,88,22);x.fill();if(im)x.drawImage(im,1467,33,54,54)}
- x.fillStyle=AXC;x.font=fnt(16);x.textAlign='left';x.fillText('Victory Farms · Best Practices Department · Biosecurity & Hygiene audit · Generated '+stamp(),60,878);
- x.textAlign='right';x.fillText('Green 80–100% Good · Amber 67–79% Average · Red 0–66% Bad',1540,878);x.textAlign='left';return{c,x}}
+ const lg=await vfImg('vf-logo.png'),[c,x]=mkc(1600,900);x.fillStyle='#fff';x.fillRect(0,0,1600,900);
+ const W=iconTile?1330:1480;x.textBaseline='alphabetic';x.textAlign='left';
+ x.fillStyle=VFG;x.font=fnt(44,700);x.fillText(fit(x,title,W),60,72);
+ x.font=fnt(23);x.fillStyle='#595959';x.fillText(fit(x,sub,W),60,106);
+ x.fillStyle='#d9d9d9';x.fillRect(60,122,1480,2);x.fillStyle=VFG;x.fillRect(60,121,120,4);
+ if(iconTile){const col=iconTile.col,im=await iconImg(iconTile.n,'#fff',54),gr=x.createLinearGradient(1440,20,1540,110);gr.addColorStop(0,sh(col,.35));gr.addColorStop(1,sh(col,-.25));x.fillStyle=gr;rr(x,1450,22,88,88,22);x.fill();if(im)x.drawImage(im,1467,39,54,54)}
+ if(lg){const hh=46,w=lg.width*hh/lg.height;x.drawImage(lg,60,836,w,hh)}else vfWord(x,60,876,44);
+ x.fillStyle=AXC;x.font=fnt(15);x.textAlign='center';x.fillText('Victory Farms Confidential',800,860);x.fillText('Biosecurity & Hygiene audit · Generated '+stamp(),800,882);
+ x.textAlign='right';x.fillText('Green 80–100% Good · Amber 67–79% Average · Red 0–66% Bad',1540,876);x.textAlign='left';return{c,x}}
+// Cover slide: template cover (lake photo, white logo)
+async function slideCover(P){
+ const[c,x]=mkc(1600,900),ph=await vfImg('vf-cover.jpg'),wl=await vfImg('vf-logo-white.png');
+ if(ph)x.drawImage(ph,0,0,1600,900);else{const g=x.createLinearGradient(0,0,1600,900);g.addColorStop(0,'#0a5a22');g.addColorStop(1,VFG);x.fillStyle=g;x.fillRect(0,0,1600,900)}
+ const sh2=x.createLinearGradient(0,380,0,900);sh2.addColorStop(0,'#00000000');sh2.addColorStop(1,'#000000b0');x.fillStyle=sh2;x.fillRect(0,380,1600,520);
+ if(wl){const w=760,hh=wl.height*w/wl.width;x.drawImage(wl,1600-w-110,110,w,hh)}else vfWord(x,0,210,96,true,1490);
+ x.textBaseline='alphabetic';x.textAlign='left';x.fillStyle='#fff';x.font=fnt(72,700);x.fillText('Biosecurity & Hygiene Audit',90,700);
+ x.font=fnt(34);x.fillStyle='#ffffffee';x.fillText(fit(x,P.scope,1400),90,760);x.font=fnt(24);x.fillStyle='#ffffffcc';x.fillText((P.T&&P.T.day?'Daily report':'Weekly report')+' · Generated '+stamp(),90,805);
+ x.fillStyle=VFB;x.fillRect(90,830,150,6);x.font=fnt(16);x.fillStyle='#ffffffb0';x.textAlign='right';x.fillText('Victory Farms Confidential',1510,870);x.textAlign='left';return c}
 function plotAxes(x,P,ws,xs,box,ytitle){const{l,r,t,b}=box,Y=v=>t+(1-v)*(b-t);
  x.font=fnt(18);x.textAlign='right';x.lineWidth=1;
  [0,.2,.4,.6,.8,1].forEach(v=>{x.strokeStyle='#e4ebe9';x.beginPath();x.moveTo(l,Y(v));x.lineTo(r,Y(v));x.stroke();x.fillStyle=AXC;x.fillText(Math.round(v*100)+'%',l-12,Y(v)+6)});
@@ -1096,10 +1108,10 @@ async function slidePoints(P,g){const col=g?CC[g]:GRN,s=g?catStats(P,g).s:repOve
  x.fillStyle=INK;x.font=fnt(32,700);x.fillText('Key points',540,200);
  bullets(x,g?pointsCat(P,g):pointsGeneral(P),540,256,1000,24,10);
  // bottom strip
- if(g){x.fillStyle=INK;x.font=fnt(20,700);x.fillText(g+': '+P.T.per+' average',60,640);tinyBars(x,P,g,60,664,1480,150,col)}
- else{x.fillStyle=INK;x.font=fnt(20,700);x.fillText('Category scores',60,642);
-  for(let j=0;j<6;j++){const k=CORE[j],cs=catStats(P,k),X=60+j*250,im=await iconImg(CI[k],CC[k],40);x.fillStyle=CC[k]+'1c';rr(x,X,656,235,184,20);x.fill();x.fillStyle=CC[k];rr(x,X,656,235,8,4);x.fill();if(im)x.drawImage(im,X+18,674,36,36);
-   x.fillStyle=INK;x.font=fnt(17,600);wrap(x,k,X+18,734,200,20,2);x.fillStyle=cs.s==null?AXC:COL[cls(cs.s)];x.font=fnt(42,800);x.fillText(pct(cs.s),X+18,826)}}
+ if(g){x.fillStyle=INK;x.font=fnt(20,700);x.fillText(g+': '+P.T.per+' average',60,600);tinyBars(x,P,g,60,624,1480,150,col)}
+ else{x.fillStyle=INK;x.font=fnt(20,700);x.fillText('Category scores',60,598);
+  for(let j=0;j<6;j++){const k=CORE[j],cs=catStats(P,k),X=60+j*250,im=await iconImg(CI[k],CC[k],40);x.fillStyle=CC[k]+'1c';rr(x,X,612,235,184,20);x.fill();x.fillStyle=CC[k];rr(x,X,612,235,8,4);x.fill();if(im)x.drawImage(im,X+18,630,36,36);
+   x.fillStyle=INK;x.font=fnt(17,600);wrap(x,k,X+18,690,200,20,2);x.fillStyle=cs.s==null?AXC:COL[cls(cs.s)];x.font=fnt(42,800);x.fillText(pct(cs.s),X+18,782)}}
  return c}
 async function pickPhotos(P,g){ // newest first; one per check first, weakest categories first for the general slide
  const inScope=p=>{const d=String(p.Date).slice(0,10).split('-').map(Number),k=wk(new Date(d[0],d[1]-1,d[2])),dk=Math.floor(Date.UTC(d[0],d[1]-1,d[2])/DAY);return(P.T.day?dk===P.dk:(P.week==='all'||k===+P.week))&&(P.loc==='all'||p.Location===P.loc)};
@@ -1111,7 +1123,7 @@ async function pickPhotos(P,g){ // newest first; one per check first, weakest ca
  const out=[];for(let round=0;out.length<4&&round<4;round++)order.concat(Object.keys(by).filter(k=>!CORE.includes(k))).forEach(k=>{if(out.length<4&&by[k]&&by[k][round]&&!out.includes(by[k][round]))out.push(by[k][round])});
  return{list:out,total}}
 async function slideEvidence(P,g){const col=g?CC[g]:GRN,{c,x}=await frame(g?g+': photo evidence':'Photo evidence of performance',P.scope,g?{n:CI[g],col}:null),{list,total}=await pickPhotos(P,g);
- const imgs=await Promise.all(list.map(p=>loadImg(fullSrc(p),true))),T=[[60,150],[810,150],[60,500],[810,500]],tw=730,th=330;
+ const imgs=await Promise.all(list.map(p=>loadImg(fullSrc(p),true))),T=[[60,145],[810,145],[60,475],[810,475]],tw=730,th=310;
  for(let i=0;i<4;i++){const[X,Y]=T[i],p=list[i];
   if(!p){x.fillStyle='#f4f8f6';rr(x,X,Y,tw,th,22);x.fill();x.setLineDash([12,9]);x.strokeStyle='#b9cbc4';x.lineWidth=3;rr(x,X+1.5,Y+1.5,tw-3,th-3,22);x.stroke();x.setLineDash([]);x.fillStyle=AXC;x.font=fnt(26,600);x.textAlign='center';x.fillText(i===0&&!total?'No photo evidence logged for this selection':'No further photo logged',X+tw/2,Y+th/2+8);x.textAlign='left';continue}
   const im=imgs[i];x.save();rr(x,X,Y,tw,th,22);x.clip();
@@ -1119,7 +1131,7 @@ async function slideEvidence(P,g){const col=g?CC[g]:GRN,{c,x}=await frame(g?g+':
   const gr=x.createLinearGradient(0,Y+th-110,0,Y+th);gr.addColorStop(0,'#00000000');gr.addColorStop(1,'#000000cc');x.fillStyle=gr;x.fillRect(X,Y+th-110,tw,110);
   x.fillStyle='#fff';x.font=fnt(26,700);x.fillText(fit(x,p.Item||'Evidence photo',tw-40),X+22,Y+th-48);x.font=fnt(19);x.fillStyle='#ffffffe0';x.fillText(fit(x,[p.Location,String(p.Date).slice(0,10),p.Time].filter(Boolean).join(' · '),tw-40),X+22,Y+th-20);x.restore();
   const r=P.rk[pkey(p)];if(r){const ct=rl(r.s)+' '+pct(r.s);x.font=fnt(22,700);const cw=x.measureText(ct).width+36;x.fillStyle=COL[cls(r.s)];rr(x,X+18,Y+18,cw,44,22);x.fill();x.fillStyle='#fff';x.textAlign='center';x.fillText(ct,X+18+cw/2,Y+48);x.textAlign='left'}}
- x.fillStyle=AXC;x.font=fnt(17);x.textAlign='center';x.fillText(total?`Showing ${list.length} of ${total} photo${total===1?'':'s'} logged for this selection (newest first).`:'Attach photos when logging a check and they will appear here.',800,858);x.textAlign='left';return c}
+ x.fillStyle=AXC;x.font=fnt(17);x.textAlign='center';x.fillText(total?`Showing ${list.length} of ${total} photo${total===1?'':'s'} logged for this selection (newest first).`:'Attach photos when logging a check and they will appear here.',800,820);x.textAlign='left';return c}
 
 // ---- generate + show ----
 const toBlob=c=>new Promise(r=>c.toBlob(r,'image/png'));
@@ -1135,9 +1147,9 @@ async function genReport(){if(RP.busy)return;RP.busy=true;const st=$('rpst'),day
   jobs.push(['graph',day?'01_Overall_by_day':'01_Overall_by_week',()=>chOverall(P)]);
   CORE.forEach((g,i)=>jobs.push(['graph','0'+(i+2).toString().slice(-1)+'_'+slug(g),()=>chCat(P,g)]));
   jobs.push(['graph','08_Categories_compared',()=>hbars(P,'Average rating by category',CORE.map(g=>({t:g,...catStats(P,g),col:CC[g],icon:CI[g]})),'Bars use each category’s own colour. Compared over the selected period and location.',true)]);
-  jobs.push(['graph','09_Locations_compared',()=>hbars(P,'Average rating by location',LOCS.map(l=>{const a=P.rw.filter(r=>r.loc===l);return{t:l,s:avg(a),n:a.length,icon:LI[l],col:SKY}}),'All locations are shown for '+(day?'the selected day':week==='all'?'all weeks':'the selected week')+(loc!=='all'?' (the location filter does not apply to this chart)':'')+'. Green ≥ 80%, amber 50–79%, red < 50%.',false)]);
+  jobs.push(['graph','09_Locations_compared',()=>hbars(P,'Average rating by location',LOCS.map(l=>{const a=P.rw.filter(r=>r.loc===l);return{t:l,s:avg(a),n:a.length,icon:LI[l],col:SKY}}),'All locations are shown for '+(day?'the selected day':week==='all'?'all weeks':'the selected week')+(loc!=='all'?' (the location filter does not apply to this chart)':'')+'. Green 80–100%, amber 67–79%, red 0–66%.',false)]);
   jobs.push(['graph','10_Location_x_category',()=>chHeat(P)]);
-  jobs.push(['slide','S01_General_key_points',()=>slidePoints(P)]);jobs.push(['slide','S02_General_photo_evidence',()=>slideEvidence(P)]);
+  jobs.push(['slide','S00_Cover',()=>slideCover(P)]);jobs.push(['slide','S01_General_key_points',()=>slidePoints(P)]);jobs.push(['slide','S02_General_photo_evidence',()=>slideEvidence(P)]);
   if(per)CORE.forEach((g,i)=>{jobs.push(['slide','S'+String(3+i*2).padStart(2,'0')+'_'+slug(g)+'_key_points',()=>slidePoints(P,g)]);jobs.push(['slide','S'+String(4+i*2).padStart(2,'0')+'_'+slug(g)+'_photo_evidence',()=>slideEvidence(P,g)])});
   for(let i=0;i<jobs.length;i++){const[k,nm,fn]=jobs[i];st.textContent=`Rendering ${i+1} of ${jobs.length}: ${nm.replace(/_/g,' ')}…`;const c=await fn(),b=await toBlob(c),u=URL.createObjectURL(b);RP.urls.push(u);RP.items.push({kind:k,name:`Biosecurity_${tag}_${nm}.png`,title:nm.replace(/^S?\d+_/,'').replace(/_/g,' '),blob:b,url:u});await new Promise(r=>setTimeout(r))}
   st.textContent='';RP.tag=tag;showReport(P);logEv('report_generated',{mode:day?'daily':'weekly',period:day?dk:week,location:loc})}
