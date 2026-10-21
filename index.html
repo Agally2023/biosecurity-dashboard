@@ -286,7 +286,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.7.1',APP_DATE='21 Oct 2026';
+const APP_VERSION='1.8.0',APP_DATE='21 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -1235,7 +1235,7 @@ function showTab(t){if(t==='f'&&ME&&ME.role==='viewer')t='d';if(t==='a'&&SB()&&!
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 // ---------- admin: users and activity log ----------
 let AD={ready:false,off:0,users:[]};
-const ACT={login:'Signed in',logout:'Signed out',signup:'Created account',entry_added:'Added entry',entry_edited:'Edited entry',entry_deleted:'Deleted entry',photo_added:'Added photo',photo_deleted:'Deleted photo',export_csv:'Exported CSV',report_generated:'Generated report',password_changed:'Changed password',user_status_changed:'Changed account status',user_role_changed:'Changed role',user_created:'Added user',import_replaced:'Updated dates from Excel',data_deleted:'Deleted data',password_reset_by_admin:'Reset a password'};
+const ACT={login:'Signed in',logout:'Signed out',signup:'Created account',entry_added:'Added entry',entry_edited:'Edited entry',entry_deleted:'Deleted entry',photo_added:'Added photo',photo_deleted:'Deleted photo',export_csv:'Exported CSV',report_generated:'Generated report',password_changed:'Changed password',user_status_changed:'Changed account status',user_role_changed:'Changed role',user_created:'Added user',import_replaced:'Updated dates from Excel',data_deleted:'Deleted data',password_reset_by_admin:'Reset a password',user_deleted:'Removed user'};
 const fdt=x=>{const d=new Date(x);return isNaN(d)?'':d.toLocaleString([],{dateStyle:'medium',timeStyle:'short'})};
 function detTxt(a,d){d=d||{};const j=(...v)=>v.filter(x=>x!=null&&x!=='').join(' · ');
  if(a==='entry_added')return d.count>1?`${d.count} entries (${d.first_date||''} to ${d.last_date||''})`:j(d.date,d.time,d.location,d.item,d.rating||(d.compliance!=null?d.compliance+'%':''));
@@ -1249,6 +1249,7 @@ function detTxt(a,d){d=d||{};const j=(...v)=>v.filter(x=>x!=null&&x!=='').join('
  if(a==='import_replaced')return `${d.file||'Excel'}: ${d.dates} date${d.dates===1?'':'s'} (${d.first_date} to ${d.last_date}), removed ${d.deleted}, stored ${d.inserted} rows`;
  if(a==='user_created')return `${d.username} (${d.email}) as ${d.role}`;
  if(a==='password_reset_by_admin')return 'for '+d.username;
+ if(a==='user_deleted')return `${d.username} (${d.email}), was ${d.role}`;
  return Object.entries(d).map(([k,v])=>k+': '+v).join(' · ')}
 async function loadUsers(){const r=await sbF('/rest/v1/profiles?select=*&order=created_at.desc');if(!r.ok){$('ausers').textContent='Could not load users.';return}
  AD.users=await r.json();const pend=AD.users.filter(u=>u.status==='pending').length;$('apend').textContent=pend?'('+pend+')':'';
@@ -1256,7 +1257,7 @@ async function loadUsers(){const r=await sbF('/rest/v1/profiles?select=*&order=c
  $('ausers').innerHTML=`<table><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last sign-in</th><th>Sign-ins</th><th>Joined</th><th></th></tr>${AD.users.map(u=>{const me=u.id===ME.id;return `<tr><td><b>${h(u.username)}</b>${me?' (you)':''}</td><td>${h(u.email)}</td>
  <td><select data-id="${h(u.id)}" data-k="role" ${me?'disabled':''}>${['admin','editor','viewer'].map(x=>`<option${x===u.role?' selected':''}>${x}</option>`).join('')}</select></td><td><span class="st ${h(u.status)}">${h(u.status)}</span></td>
  <td>${u.last_login_at?h(fdt(u.last_login_at)):'never'}</td><td>${u.login_count}</td><td>${h(fdt(u.created_at))}</td>
- <td>${me?'':u.status==='pending'?`<button class="mini pri" data-id="${h(u.id)}" data-st="active">Approve</button><button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Reject</button>`:u.status==='active'?`<button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Disable</button>`:`<button class="mini" data-id="${h(u.id)}" data-st="active">Enable</button>`}${me?'':`<button class="mini" data-id="${h(u.id)}" data-pw="1" data-un="${h(u.username)}">Reset password</button>`}</td></tr>`}).join('')}</table>`}
+ <td>${me?'':u.status==='pending'?`<button class="mini pri" data-id="${h(u.id)}" data-st="active">Approve</button><button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Reject</button>`:u.status==='active'?`<button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Disable</button>`:`<button class="mini" data-id="${h(u.id)}" data-st="active">Enable</button>`}${me?'':`<button class="mini" data-id="${h(u.id)}" data-pw="1" data-un="${h(u.username)}">Reset password</button><button class="mini bad" data-id="${h(u.id)}" data-del="1" data-un="${h(u.username)}" data-em="${h(u.email)}">Remove</button>`}</td></tr>`}).join('')}</table>`}
 async function setProf(id,patch){const r=await sbF('/rest/v1/profiles?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(patch)});
  let j=[];try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.message||('Error '+r.status));if(!j.length)throw new Error('Not allowed')}
 async function adminFn(body){const r=await sbF('/functions/v1/admin-users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});let j={};try{j=await r.json()}catch(e){}if(!r.ok||j.error)throw new Error(j.error||('Error '+r.status));return j}
@@ -1264,6 +1265,9 @@ function showCred(j,title){const o=$('an-out');o.style.display='';o.className='n
  $('an-cp').onclick=()=>{try{navigator.clipboard.writeText(j.password);$('an-cp').textContent='Copied'}catch(e){const r=document.createRange();r.selectNodeContents($('an-pwv'));getSelection().removeAllRanges();getSelection().addRange(r)}}}
 $('an-go').onclick=async()=>{const b=$('an-go');b.disabled=true;$('an-out').style.display='none';try{const j=await adminFn({action:'create_user',email:$('an-em').value,username:$('an-un').value,role:$('an-ro').value,password:$('an-pw').value});showCred(j,'User added and ready to sign in');$('an-em').value=$('an-un').value=$('an-pw').value='';await loadUsers();await loadLog(true)}catch(x){const o=$('an-out');o.style.display='';o.className='note';o.textContent=x.message}b.disabled=false};
 $('ausers').addEventListener('click',async e=>{const rb=e.target.closest('button[data-pw]');if(!rb)return;if(!confirm('Set a new temporary password for '+rb.dataset.un+'? Their old password will stop working.'))return;rb.disabled=true;try{const j=await adminFn({action:'reset_password',user_id:rb.dataset.id});showCred(j,'Password reset');$('an-out').scrollIntoView({block:'nearest'});await loadLog(true)}catch(x){alert('Could not reset: '+x.message)}rb.disabled=false});
+$('ausers').addEventListener('click',async e=>{const d=e.target.closest('button[data-del]');if(!d)return;
+ if(!confirm('Remove '+d.dataset.un+' ('+d.dataset.em+') permanently?\n\nThey will no longer be able to sign in. Their past entries and activity stay in the records under their username. This cannot be undone.'))return;
+ d.disabled=true;try{await adminFn({action:'delete_user',user_id:d.dataset.id});$('an-out').style.display='';$('an-out').className='note ok';$('an-out').textContent='Removed user '+d.dataset.un+'.';await loadUsers();await loadLog(true)}catch(x){alert('Could not remove: '+x.message);d.disabled=false}});
 $('ausers').addEventListener('click',async e=>{const b=e.target.closest('button[data-st]');if(!b)return;b.disabled=true;try{await setProf(b.dataset.id,{status:b.dataset.st});await loadUsers();await loadLog(true)}catch(x){alert('Could not change this account: '+x.message);b.disabled=false}});
 $('ausers').addEventListener('change',async e=>{const s=e.target.closest('select[data-k]');if(!s)return;try{await setProf(s.dataset.id,{role:s.value});await loadUsers();await loadLog(true)}catch(x){alert('Could not change the role: '+x.message);loadUsers()}});
 function logQ(off,lim){let q=`/rest/v1/audit_log?select=*&order=at.desc,id.desc&limit=${lim}&offset=${off}`;const u=$('alu').value,a=$('ala').value,f=$('alf').value,t=$('alt').value;

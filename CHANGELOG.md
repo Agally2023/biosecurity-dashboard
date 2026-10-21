@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.8.0 (21 Oct 2026)
+- Admin tab: Remove user (permanent). Past entries and activity stay under the person's username; you cannot remove yourself or the last active administrator.
+
 ## 1.7.1 (21 Oct 2026)
 - Every checklist item is rated Good / Average / Bad. The six former Yes/No items no longer show Yes/No; older Yes/No answers still score the same and display as the matching band.
 
