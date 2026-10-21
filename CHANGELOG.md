@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.7.1 (21 Oct 2026)
+- Every checklist item is rated Good / Average / Bad. The six former Yes/No items no longer show Yes/No; older Yes/No answers still score the same and display as the matching band.
+
 ## 1.7.0 (21 Oct 2026)
 - Version number shown on the sign-in screen, in the header and in the Admin tab.
 - Android/PWA manifest: app id, shortcuts (Log a check, Dashboard, Reports), portrait orientation.

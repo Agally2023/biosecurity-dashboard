@@ -286,7 +286,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.7.0',APP_DATE='21 Oct 2026';
+const APP_VERSION='1.7.1',APP_DATE='21 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -320,7 +320,9 @@ const MON=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','De
 const rp=s=>Math.round(s*100),cls=s=>s==null?'n':rp(s)>=80?'g':rp(s)>=67?'a':'r',pct=s=>s==null?'-':Math.round(s*100)+'%';
 const avg=a=>a.length?a.reduce((x,y)=>x+y.s,0)/a.length:null;
 const day=s=>new Date(String(s).slice(0,10)+'T00:00:00');
-const score=r=>{const c=r['Compliance %'];if(c!==''&&c!=null)return +c/100;let s=MAP[r.Rating];if(s!=null&&info(r.Item)[4]==='inv')s=1-s;return s};
+const score=r=>{const c=r['Compliance %'];if(c!==''&&c!=null)return +c/100;let s=MAP[r.Rating];if(s!=null&&info(r.Item)[4]==='inv'&&(r.Rating==='Yes'||r.Rating==='No'))s=1-s;return s};
+// Every item is now rated Good / Average / Bad. Older Yes/No answers are shown as the equivalent band (Yes = Good, No = Bad; reversed for 'Water Accumulation').
+const yn2b=(item,r)=>{const inv=info(item)[4]==='inv';return r==='Yes'?(inv?'Bad':'Good'):r==='No'?(inv?'Good':'Bad'):r};
 const norm=r=>{const s=score(r),d=day(r.Date);if(s==null||isNaN(s)||isNaN(d))return null;const i=info(r.Item);
  return{d,s,k:wk(d),loc:r.Location,cat:r.Category,item:r.Item,g:grp(r),src:r.Source||'',raw:r}};
 let ROWS=[],ACK=false,VIEW=[],F={w:'all',l:'all',c:'all'},LASTSIG='all|all|all';
@@ -623,8 +625,8 @@ function fpHint(){const v=$('fp').value.trim(),e=$('fpb');if(v===''){e.style.col
  const b=bandOf(+v);e.style.color=b==='Good'?COL.g:b==='Average'?'#a97a0e':COL.r;e.innerHTML='<b>'+v+'% = '+b+'</b> ('+BANDS.find(x=>x[0]===b)[1]+')'}
 $('fp').addEventListener('input',fpHint);
 function syncItem(){const t=type(),i=info($('fi').value);$('wc').classList.toggle('hide',t!=='c');$('wr').classList.toggle('hide',t==='c');
- $('fr').innerHTML=t==='y'?opt(['Yes','No']):BANDS.map(([n,r])=>`<option value="${n}">${n} (${r})</option>`).join('');
- $('hint').textContent=i[4]==='inv'?'Yes/No question. Yes = standing water present (scores 0).':t==='y'?'This item is a Yes / No question.':t==='g'?'Good 80\u2013100% \u00b7 Average 67\u201379% \u00b7 Bad 0\u201366%. Scored as Good = 100%, Average = 67%, Bad = 0%.':'';fpHint()}
+ $('fr').innerHTML=BANDS.map(([n,r])=>`<option value="${n}">${n} (${r})</option>`).join('');
+ $('hint').textContent=i[4]==='inv'?'Good = no standing water. Bad = standing water present.':t==='y'?'Good = done / in place. Bad = not done. Average = partly done. Scored as Good = 100%, Average = 67%, Bad = 0%.':t==='g'?'Good 80\u2013100% \u00b7 Average 67\u201379% \u00b7 Bad 0\u201366%. Scored as Good = 100%, Average = 67%, Bad = 0%.':'';fpHint()}
 function syncItems(){const nofb=NOFB.includes($('fl').value),cur=$('fi').value;
  const list=IT.filter(i=>i[1]===$('fc').value&&!(nofb&&i[4]==='fb')).map(i=>i[0]);$('fi').innerHTML=opt(list);if(list.includes(cur))$('fi').value=cur;syncItem()}
 $('fl').innerHTML=opt(LOCS);$('fc').innerHTML=opt(CATS);$('fs').innerHTML=opt(SRC);$('fd').value=today();$('ft').value=nowT();syncItems();
@@ -910,7 +912,7 @@ function showAI(r){
  const obs=String(r.observations||'').slice(0,400),iss=(Array.isArray(r.issues)?r.issues:[]).slice(0,3).map(x=>String(x).slice(0,120));
  if(!it){AIR=null;setAI(`<b>No clear match</b><span class="chip" style="background:${col}">${conf} confidence</span><br>${h(obs||'Claude could not match the photo to a checklist item.')}<br><button type="button" class="sub sec" id="aid">Dismiss</button>`);$('aid').onclick=()=>$('ai').classList.add('hide');return}
  const t=it[2];let rating=null,comp=null;
- if(t!=='c'&&(t==='y'?['Yes','No']:['Good','Average','Bad']).includes(r.rating))rating=r.rating;
+ if(t!=='c'&&['Good','Average','Bad','Yes','No'].includes(r.rating))rating=yn2b(it[0],r.rating);
  if(t==='c'&&r.compliance_pct!=null&&!isNaN(+r.compliance_pct)&&+r.compliance_pct>=0&&+r.compliance_pct<=100)comp=Math.round(+r.compliance_pct);
  AIR={item:it[0],rating,comp,obs};
  const res=t==='c'?(comp!=null?comp+'%':'enter the % yourself (cannot be counted from a photo)'):(rating||'no rating suggested'),cur=$('fi').value;
@@ -1278,9 +1280,9 @@ $('ald').onclick=async()=>{const out=[['When','User','Email','Action','Details']
  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+out.map(r=>r.map(esc).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));a.download='Activity_log_'+today()+'.csv';document.body.appendChild(a);a.click();a.remove()};
 // admin: correct an entry
 $('vt').addEventListener('click',e=>{const b=e.target.closest('.ed');if(b&&ME&&ME.role==='admin'){const r=VIEW[+b.dataset.i];if(r)editEntry(r.raw)}});
-function editEntry(raw){const m=document.createElement('div');m.id='edm';const yn=['Yes','No'].includes(raw.Rating),opts=(yn?['Yes','No']:['Good','Average','Bad']),rg=n=>{const b=BANDS.find(x=>x[0]===n);return b?n+' ('+b[1]+')':n};
+function editEntry(raw){const m=document.createElement('div');m.id='edm';const cur=yn2b(raw.Item,raw.Rating),opts=['Good','Average','Bad'],rg=n=>{const b=BANDS.find(x=>x[0]===n);return b?n+' ('+b[1]+')':n};
  m.innerHTML=`<div class="box" role="dialog" aria-label="Edit entry"><b>Edit entry</b><div class="legend">${h(String(raw.Date).slice(0,10))} · ${h(raw.Location)} · ${h(raw.Item)}<br>Logged by ${h(raw.By||'unknown')}. Your change is recorded in the activity log.</div>
- <label>Result</label><select id="e-r"><option value=""></option>${opts.map(o=>`<option value="${o}"${o===raw.Rating?' selected':''}>${rg(o)}</option>`).join('')}</select>
+ <label>Result</label><select id="e-r"><option value=""></option>${opts.map(o=>`<option value="${o}"${o===cur?' selected':''}>${rg(o)}</option>`).join('')}</select>
  <label>Compliance % (whole number 0&ndash;100, empty if not used)</label><input type="number" id="e-c" min="0" max="100" step="any" value="${raw['Compliance %']===''||raw['Compliance %']==null?'':h(raw['Compliance %'])}">
  <label>Evidence / source</label><input type="text" id="e-s" value="${h(raw.Source||'')}"><label>Notes</label><textarea id="e-n" rows="3">${h(raw.Notes||'')}</textarea>
  <div id="e-m" class="legend" style="color:#8a2a21"></div><div style="margin-top:10px;display:flex;gap:8px;justify-content:flex-end"><button type="button" class="mini" id="e-x">Cancel</button><button type="button" class="mini pri" id="e-ok">Save change</button></div></div>`;
