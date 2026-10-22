@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.4 (22 Oct 2026)
+- Audit form: auditors can key in a percent (0-100) for any Good/Average/Bad item; it selects the matching rating (Good 80-100, Average 67-79, Bad 0-66) and is recorded as that rating.
+- Fixed: pressing Review reset the rating to Good. The chosen rating is now kept.
+
 ## 1.9.3 (22 Oct 2026)
 - Dashboard graphs now use the Victory Farms report layout: green title with a rule, VF logo and "Victory Farms Confidential" footer, same as the slides.
 - Slide and zip downloads: a visible "Preparing…" message and clear error text; if the photos cannot be loaded the slides are built without them; the zip always includes the pictures; the old report is cleared while a new one is built.

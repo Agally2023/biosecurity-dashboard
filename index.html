@@ -271,7 +271,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div><label>Location</label><select id="fl" autocomplete="off"></select></div>
 <div><label>Category</label><select id="fc" autocomplete="off"></select></div>
 <div><label>Item</label><select id="fi" autocomplete="off"></select></div>
-<div id="wr"><label>Rating</label><select id="fr" autocomplete="off"></select><div class="legend" id="hint"></div></div>
+<div id="wr"><label>Rating</label><select id="fr" autocomplete="off"></select><div class="legend" id="hint"></div><label style="margin-top:8px">Or key in the percent (whole number 0&ndash;100)</label><input type="number" id="fq" min="0" max="100" step="1" inputmode="numeric" placeholder="e.g. 73" autocomplete="off"><div class="legend" id="fqb"></div></div>
 <div id="wc" class="hide"><label>Compliance % from your observation (whole number 0&ndash;100, e.g. 73 for 8 of 11 people)</label><input type="number" id="fp" min="0" max="100" step="1" inputmode="numeric"><div class="legend" id="fpb"></div></div>
 <div><label>Evidence / source</label><select id="fs"></select><div class="legend" id="shint">Switches to Photo evidence when you attach pictures.</div></div></div>
 <div style="margin-top:12px"><label>Notes (photo caption, what you saw)</label><textarea id="fn" rows="2"></textarea></div>
@@ -291,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.3',APP_DATE='22 Oct 2026';
+const APP_VERSION='1.9.4',APP_DATE='22 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -373,7 +373,7 @@ async function enter(fresh){
   const p=await getProfile();
   if(!p){lockUi();av('wait','Account not set up','Your profile was not found. Please sign out and contact the administrator.');return}
   ME=p;if(p.status!=='active'){waitScreen(p);return}
-  document.body.classList.remove('locked');$('auth').classList.add('off');applyRole();READY=true;try{syncItems()}catch(e){}LASTACT=Date.now();
+  document.body.classList.remove('locked');$('auth').classList.add('off');applyRole();READY=true;try{syncItems(true)}catch(e){}LASTACT=Date.now();
   if(fresh)logEv('login',{});await load();try{const q=new URLSearchParams(location.search).get('tab');if(q&&['d','r','f','a'].includes(q))showTab(q)}catch(e){}if(ME.role==='admin')adminInit()
  }catch(e){lockUi();av(SES?'wait':'in',...(SES?['Could not connect','Could not reach the server right now. Check your internet and tap "Check again".']:[]));amsg(aFriendly(e))}}
 addEventListener('hashchange',()=>{if(/type=recovery/.test(location.hash))location.reload()});
@@ -629,22 +629,27 @@ function fpHint(){const v=$('fp').value.trim(),e=$('fpb');if(v===''){e.style.col
  if(!/^\d{1,3}$/.test(v)||+v>100){e.style.color=COL.r;e.textContent='Not accepted: enter a whole number from 0 to 100. '+RNG;return}
  const b=bandOf(+v);e.style.color=b==='Good'?COL.g:b==='Average'?'#a97a0e':COL.r;e.innerHTML='<b>'+v+'% = '+b+'</b> ('+BANDS.find(x=>x[0]===b)[1]+')'}
 $('fp').addEventListener('input',fpHint);
-function syncItem(){const t=type(),i=info($('fi').value);$('wc').classList.toggle('hide',t!=='c');$('wr').classList.toggle('hide',t==='c');
- $('fr').innerHTML=BANDS.map(([n,r])=>`<option value="${n}">${n} (${r})</option>`).join('');
- $('hint').textContent=i[4]==='inv'?'Good = no standing water. Bad = standing water present.':t==='y'?'Good = done / in place. Bad = not done. Average = partly done. Scored as Good = 100%, Average = 67%, Bad = 0%.':t==='g'?'Good 80\u2013100% \u00b7 Average 67\u201379% \u00b7 Bad 0\u201366%. Scored as Good = 100%, Average = 67%, Bad = 0%.':'';fpHint()}
-function syncItems(){const nofb=NOFB.includes($('fl').value),cur=$('fi').value;
- const list=IT.filter(i=>i[1]===$('fc').value&&!(nofb&&i[4]==='fb')).map(i=>i[0]);$('fi').innerHTML=opt(list);if(list.includes(cur))$('fi').value=cur;syncItem()}
+function syncItem(keep){const t=type(),i=info($('fi').value),prev=$('fr').value,pq=$('fq').value;$('wc').classList.toggle('hide',t!=='c');$('wr').classList.toggle('hide',t==='c');
+ $('fr').innerHTML=BANDS.map(([n,r])=>`<option value="${n}">${n} (${r})</option>`).join('');if(keep&&BANDS.some(b=>b[0]===prev))$('fr').value=prev;$('fq').value=keep?pq:'';
+ $('hint').textContent=i[4]==='inv'?'Good = no standing water. Bad = standing water present.':t==='y'?'Good = done / in place. Bad = not done. Average = partly done. Scored as Good = 100%, Average = 67%, Bad = 0%.':t==='g'?'Good 80\u2013100% \u00b7 Average 67\u201379% \u00b7 Bad 0\u201366%. Scored as Good = 100%, Average = 67%, Bad = 0%.':'';fpHint();fqHint()}
+function fqHint(){const v=$('fq').value.trim(),e=$('fqb');if(v===''){e.style.color='';e.textContent='Optional: type the percent and the rating below is chosen for you. It is recorded as Good, Average or Bad.';return}
+ if(!/^\d{1,3}$/.test(v)||+v>100){e.style.color=COL.r;e.textContent='Not accepted: enter a whole number from 0 to 100.';return}
+ const b=bandOf(+v);$('fr').value=b;e.style.color=b==='Good'?COL.g:b==='Average'?'#a97a0e':COL.r;e.innerHTML='<b>'+v+'% = '+b+'</b> ('+BANDS.find(x=>x[0]===b)[1]+'). Recorded as '+b+'.'}
+$('fq').addEventListener('input',fqHint);$('fr').addEventListener('change',()=>{$('fq').value='';fqHint()});
+function syncItems(keep){const nofb=NOFB.includes($('fl').value),cur=$('fi').value;
+ const list=IT.filter(i=>i[1]===$('fc').value&&!(nofb&&i[4]==='fb')).map(i=>i[0]);$('fi').innerHTML=opt(list);if(list.includes(cur))$('fi').value=cur;syncItem(keep&&list.includes(cur))}
 $('fl').innerHTML=opt(LOCS);$('fc').innerHTML=opt(CATS);$('fs').innerHTML=opt(SRC);$('fd').value=today();$('ft').value=nowT();syncItems();
-['fd','fl','fi','fr','fp'].forEach(id=>$(id).addEventListener('change',()=>{ACK=false}));$('fl').onchange=syncItems;$('fc').onchange=syncItems;$('fi').onchange=syncItem;window.addEventListener('pageshow',()=>syncItems());
+['fd','fl','fi','fr','fp'].forEach(id=>$(id).addEventListener('change',()=>{ACK=false}));$('fl').onchange=()=>syncItems();$('fc').onchange=()=>syncItems();$('fi').onchange=()=>syncItem();window.addEventListener('pageshow',()=>syncItems(true));
 async function save(list){
  if(SB()){try{await sbInsert('bio_log',list.map(toDb))}catch(e){if(e.status&&e.status<500)throw e;setPending(getPending().concat(list.map(r=>({...r,_uid:ME?ME.id:''}))));CONN={t:'No connection to the database right now. Your entries are kept on this device and will upload automatically when it is back (tap Refresh to retry).',ok:false}}}
  else if(CFG.DATA_URL)await fetch(CFG.DATA_URL,{method:'POST',mode:'no-cors',headers:{'Content-Type':'text/plain'},body:JSON.stringify({rows:list})});
  else setLocal(getLocal().concat(list));
  ROWS=ROWS.concat(list);draw();if(CFG.DATA_URL)setTimeout(load,3000)}
 $('sb').onclick=async()=>{
- syncItems();const t=type(),comp=$('fp').value.trim();
+ syncItems(true);const t=type(),comp=$('fp').value.trim();
  if(!$('fd').value||!$('ft').value)return $('fmsg').textContent='Enter date and time.';
  if(t==='c'&&!/^\d{1,3}$/.test(comp)||t==='c'&&+comp>100)return $('fmsg').textContent='Enter the compliance % as a whole number from 0 to 100 ('+RNG+').';
+ if(t!=='c'&&$('fq').value.trim()!==''&&(!/^\d{1,3}$/.test($('fq').value.trim())||+$('fq').value>100))return $('fmsg').textContent='Enter the percent as a whole number from 0 to 100, or clear it.';
  const raw={Date:$('fd').value,Time:$('ft').value,Location:$('fl').value,Category:$('fc').value,Item:$('fi').value,
   Rating:t==='c'?'':$('fr').value,'Compliance %':t==='c'?+comp:'',Source:$('fs').value,Notes:$('fn').value.trim()};
  const warns=[];
@@ -662,7 +667,7 @@ function showReview(raw,warns){
  $('rvno').onclick=()=>{$('rv').classList.add('hide');$('fmsg').textContent='Cancelled. Nothing was saved.'};
  $('rv').scrollIntoView({block:'nearest'})}
 function cancelEntry(){STG.forEach(x=>URL.revokeObjectURL(x.url));STG=[];drawStage();$('rv').classList.add('hide');$('ai').classList.add('hide');
- $('fp').value='';$('fn').value='';$('fd').value=today();$('ft').value=nowT();ACK=false;$('fmsg').textContent='Entry cancelled. Nothing was saved.'}
+ $('fp').value='';$('fq').value='';$('fr').selectedIndex=0;fqHint();$('fn').value='';$('fd').value=today();$('ft').value=nowT();ACK=false;$('fmsg').textContent='Entry cancelled. Nothing was saved.'}
 $('cx').onclick=cancelEntry;
 async function confirmSave(raw){
  $('rv').classList.add('hide');ACK=false;$('sb').disabled=true;$('cx').disabled=true;
@@ -670,7 +675,7 @@ async function confirmSave(raw){
  let n=0;
  try{for(const st of STG){$('fmsg').textContent=`Check saved. Saving photo ${n+1} of ${STG.length}…`;await savePhoto(raw,st,n);n++}
   const tot=STG.length;STG.forEach(x=>URL.revokeObjectURL(x.url));STG=[];drawStage();drawPhotos();draw();
-  $('fmsg').textContent='Saved ✓'+(tot?` with ${tot} photo${tot>1?'s':''}`:'');$('fp').value='';$('fn').value='';$('ft').value=nowT();
+  $('fmsg').textContent='Saved ✓'+(tot?` with ${tot} photo${tot>1?'s':''}`:'');$('fp').value='';$('fq').value='';$('fr').selectedIndex=0;fqHint();$('fn').value='';$('ft').value=nowT();
   if(CFG.DATA_URL&&tot)setTimeout(loadPhotos,5000)}
  catch(e){$('fmsg').textContent=`Check saved, but photo ${n+1} could not be stored (storage may be full). Remove it and try again.`;STG.splice(0,n);drawStage()}
  $('sb').disabled=false;$('cx').disabled=false}
