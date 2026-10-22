@@ -19,6 +19,12 @@ h2{font-size:14px;margin:0 0 10px;color:#14633f}h3{font-size:12px;color:var(--mu
 .bar{height:10px;background:#e8efed;border-radius:5px;overflow:hidden}.bar i{display:block;height:100%}
 .g{background:var(--g)}.a{background:var(--a)}.r{background:var(--r)}.n{background:#c5d0ce}
 .note{background:#fff6dd;border:1px solid #ecd48a;border-radius:8px;padding:8px 12px;margin:14px 0 0;font-size:13px}.ok{background:#e2f5ec;border-color:#9fd5b9}
+.vfc{padding:16px 18px 10px}.vfc>h2,.vfc>.vfh{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;font:700 20px Calibri,Carlito,"Segoe UI",Roboto,Arial,sans-serif;color:#0E812E;margin:0 0 14px;padding-bottom:9px;border-bottom:2px solid #d9d9d9;position:relative}
+.vfc>h2::after,.vfc>.vfh::after{content:"";position:absolute;left:0;bottom:-2px;width:90px;height:4px;background:#0E812E}
+.vfc>h2{justify-content:flex-start;align-items:center}.vfc>h2 small{margin-left:auto}.vfc>h2 svg.ic,.vfc .vfh svg.ic{stroke:#0E812E}.vfc>h2 small{font:400 13px Calibri,Carlito,"Segoe UI",Arial,sans-serif;color:#595959}
+.vfc>.vfh h2{margin:0;font:inherit;color:inherit}.vfc>.vfh .legend{margin:0;font-weight:400}
+.vfc::after{content:"Victory Farms Confidential";display:block;margin-top:12px;padding:8px 0 0 0;border-top:1px solid #eef2f0;text-align:center;font:11px Calibri,Carlito,"Segoe UI",Arial,sans-serif;color:#8a9692;line-height:26px;background:url(assets/vf-logo.png) left 6px/auto 22px no-repeat}
+@media(max-width:560px){.vfc>h2,.vfc>.vfh{font-size:17px}.vfc::after{text-align:right}}
 .legend{font-size:12px;color:var(--mut);margin-top:8px}.hide{display:none!important}svg{width:100%;height:auto}
 .fg{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-top:14px}
 label{display:block;font-size:12px;color:var(--mut);margin-bottom:3px}
@@ -203,20 +209,19 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div class="card kpi"><i class="ico" data-ic="clock" data-s="22"></i><div><b id="k4">-</b><span>Days since last entry</span></div></div>
 <div class="card kpi"><i class="ico" data-ic="user" data-s="22"></i><div><b id="k5">-</b><span>Self-reported share</span></div></div>
 <div class="card kpi"><i class="ico" data-ic="cam" data-s="22"></i><div><b id="k6">-</b><span>Checks with photo evidence (where needed)</span></div></div></div>
-<div class="card" id="dly" style="margin:0 0 12px"><div class="tools" style="margin-top:0"><h2 data-ic="cal" style="margin:0">Daily performance</h2><span class="dyc"><button type="button" class="fb-reset" id="dyp" aria-label="Previous day">&lsaquo;</button><input type="date" id="dyd" aria-label="Day"><button type="button" class="fb-reset" id="dyn" aria-label="Next day">&rsaquo;</button><button type="button" class="fb-reset" id="dyt">Latest</button><select id="dyl" aria-label="Location"></select><button type="button" class="sub" id="dyr" style="margin:0;padding:7px 14px" data-ic="rep"> Daily report</button></span></div><div id="dyb"></div></div>
-<div class="tools"><h2 data-ic="trend">Overall rating by week</h2><span class="legend" style="margin:0">Tracked from week 29 (13 Jul 2026) to the latest week with data</span></div>
-<div class="card"><div id="ovr"></div></div>
+<div class="card vfc" id="dly" style="margin:0 0 12px"><div class="tools vfh" style="margin-top:0"><h2 data-ic="cal" style="margin:0">Daily performance</h2><span class="dyc"><button type="button" class="fb-reset" id="dyp" aria-label="Previous day">&lsaquo;</button><input type="date" id="dyd" aria-label="Day"><button type="button" class="fb-reset" id="dyn" aria-label="Next day">&rsaquo;</button><button type="button" class="fb-reset" id="dyt">Latest</button><select id="dyl" aria-label="Location"></select><button type="button" class="sub" id="dyr" style="margin:0;padding:7px 14px" data-ic="rep"> Daily report</button></span></div><div id="dyb"></div></div>
+<div class="card vfc"><div class="vfh"><h2 data-ic="trend">Overall rating by week</h2><span class="legend">Tracked from week 29 (13 Jul 2026) to the latest week with data</span></div><div id="ovr"></div></div>
 <div class="grid" style="margin-top:12px">
-<div class="card"><h2 data-ic="bars">Average rating by category (all audit data)</h2><div id="grp"></div><div class="legend">Green (Good) 80&ndash;100% &middot; Amber (Average) 67&ndash;79% &middot; Red (Bad) 0&ndash;66%. Blank checks are excluded, not scored 0.</div></div>
+<div class="card vfc"><h2 data-ic="bars">Average rating by category (all audit data)</h2><div id="grp"></div><div class="legend">Green (Good) 80&ndash;100% &middot; Amber (Average) 67&ndash;79% &middot; Red (Bad) 0&ndash;66%. Blank checks are excluded, not scored 0.</div></div>
 <div class="card"><h2 data-ic="alert">Needs attention</h2><ul class="ins" id="ins"></ul></div></div>
 <div class="tools"><h2 data-ic="bars">Weekly average by category</h2><span class="legend" style="margin:0">Bars update automatically from the audits</span></div>
 <div class="key" id="clg" style="margin:0 0 10px"></div>
 <div class="cb" id="cb"></div>
 <div class="grid">
-<div class="card"><h2 data-ic="grid">Location &times; category</h2><div class="tw" id="hm"></div><div class="legend">&ldquo;&ndash;&rdquo; = not applicable or not reported (e.g. no footbath in changing rooms).</div></div>
-<div class="card"><h2 data-ic="pin">Average score by location</h2><div id="loc"></div></div></div>
+<div class="card vfc"><h2 data-ic="grid">Location &times; category</h2><div class="tw" id="hm"></div><div class="legend">&ldquo;&ndash;&rdquo; = not applicable or not reported (e.g. no footbath in changing rooms).</div></div>
+<div class="card vfc"><h2 data-ic="pin">Average score by location</h2><div id="loc"></div></div></div>
 <div class="grid">
-<div class="card"><h2 data-ic="list">Average score by item</h2><div id="item"></div></div></div>
+<div class="card vfc"><h2 data-ic="list">Average score by item</h2><div id="item"></div></div></div>
 </section>
 
 <section id="r" class="hide" style="margin-top:14px"><div class="card">
@@ -286,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.2',APP_DATE='22 Oct 2026';
+const APP_VERSION='1.9.3',APP_DATE='22 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -614,7 +619,7 @@ function drawWeekly(rows,demo){
  const W=weekly(rows);$('ovr').innerHTML=overallChart(W);
  $('clg').innerHTML='<strong style="color:var(--ink);margin-right:2px">Key:</strong> '+CORE.map(g=>`<span><i style="background:${CC[g]}"></i>${ic(CI[g],CC[g],14)}${h(g)}</span>`).join('');
  $('cb').innerHTML=CORE.map(g=>{const a=rows.filter(r=>r.g===g),m=avg(a);
-  return `<div class="card"><h2><span>${chip(g,CORE.indexOf(g))}${h(g)}</span><small>${a.length?`avg <b style="color:${CC[g]}">${pct(m)}</b> &middot; ${a.length} ratings`:'no ratings yet'}</small></h2>${catBars(g,W)}</div>`}).join('')}
+  return `<div class="card vfc"><h2><span>${chip(g,CORE.indexOf(g))}${h(g)}</span><small>${a.length?`avg <b style="color:${CC[g]}">${pct(m)}</b> &middot; ${a.length} ratings`:'no ratings yet'}</small></h2>${catBars(g,W)}</div>`}).join('')}
 
 // ---------- form ----------
 const today=()=>new Date(Date.now()-new Date().getTimezoneOffset()*6e4).toISOString().slice(0,10),nowT=()=>new Date().toTimeString().slice(0,5);
@@ -1073,7 +1078,7 @@ async function nativePptx(slides,imgs){
  return new Blob([zipBlob(f)],{type:'application/vnd.openxmlformats-officedocument.presentationml.presentation'})}
 
 // ---- the deck: every slide is built from the report data (editable text, shapes and charts; photos stay pictures) ----
-async function fetchImg(src){try{const r=await fetch(src);if(!r.ok)return null;const b=await r.blob(),bm=await createImageBitmap(b),w=bm.width,h=bm.height;bm.close&&bm.close();return{data:new Uint8Array(await b.arrayBuffer()),w,h,ext:/png/.test(b.type)||/\.png(\?|$)/i.test(src)?'png':'jpg'}}catch(e){return null}}
+async function fetchImg(src){if(window.NOPHOTO&&!/^assets\//.test(src))return null;try{const r=await fetch(src);if(!r.ok)return null;const b=await r.blob(),bm=await createImageBitmap(b),w=bm.width,h=bm.height;bm.close&&bm.close();return{data:new Uint8Array(await b.arrayBuffer()),w,h,ext:/png/.test(b.type)||/\.png(\?|$)/i.test(src)?'png':'jpg'}}catch(e){return null}}
 async function wordmarkImg(white){const[c,x]=mkc(720,150);vfWord(x,0,118,120,white);const b=await toBlob(c);return{data:new Uint8Array(await b.arrayBuffer()),w:720,h:150,ext:'png'}}
 const flat=(n,v)=>Array.from({length:n},()=>v);
 const REFS=n=>[{name:'Good from 80%',vals:flat(n,.8),color:'7F7F7F',line:true,dash:true},{name:'Average from 67%',vals:flat(n,.67),color:'A6A6A6',line:true,dash:true}];
@@ -1313,7 +1318,7 @@ function repOpts(){const ws=[];const all=ROWS.map(norm).filter(Boolean),last=Mat
  if(!$('rpd').value){const mx=Math.max(...all.map(r=>dkOf(r.d)));if(isFinite(mx))$('rpd').value=dkStr(mx)}rptSync();
  if(!$('rpl').options.length)$('rpl').innerHTML=`<option value="all">All locations</option>`+LOCS.map(l=>`<option>${h(l)}</option>`).join('')}
 async function genReport(){if(RP.busy)return;RP.busy=true;const st=$('rpst'),day=$('rpt').value==='day',week=$('rpw').value,loc=$('rpl').value,per=$('rpcat').checked,dk=day?dkFrom($('rpd').value):null;$('rpgo').disabled=true;
- try{RP.urls.forEach(u=>URL.revokeObjectURL(u));RP.urls=[];RP.items=[];const P=repPrep(week,loc,dk);
+ try{RP.urls.forEach(u=>URL.revokeObjectURL(u));RP.urls=[];RP.items=[];$('rpout').innerHTML='';const P=repPrep(week,loc,dk);
   if(day&&(!$('rpd').value||!P.sr.length)){st.textContent=$('rpd').value?`No checks were audited on ${dkLong(dk)}${loc==='all'?'':' at '+loc}. Pick another day.`:'Pick a day first.';return}
   if(!P.all.length){st.textContent='No entries yet: audit or import some checks first.';return}
   const tag=(day?'Day_'+$('rpd').value:week==='all'?'AllWeeks':'W'+week)+'_'+(loc==='all'?'AllLocations':slug(loc)),jobs=[];
@@ -1328,11 +1333,20 @@ async function genReport(){if(RP.busy)return;RP.busy=true;const st=$('rpst'),day
   st.textContent='';RP.tag=tag;RP.P=P;RP.per=per;showReport(P);logEv('report_generated',{mode:day?'daily':'weekly',period:day?dk:week,location:loc})}
  catch(e){st.textContent='Could not build the report: '+(e&&e.message?e.message:e)}finally{RP.busy=false;$('rpgo').disabled=false}}
 function showReport(P){const gr=RP.items.filter(i=>i.kind==='graph'),sl=RP.items.filter(i=>i.kind==='slide'),card=i=>`<figure class="rf"><a href="${i.url}" download="${h(i.name)}"><img src="${i.url}" alt="${h(i.title)}"></a><figcaption><span>${h(i.title)}</span><a class="rdl" href="${i.url}" download="${h(i.name)}">${ic('dl',null,15)} PNG</a></figcaption></figure>`;
- $('rpout').innerHTML=`<div class="card" style="margin-top:12px"><div class="tools" style="margin:0 0 8px"><h2 data-ic="up" style="margin:0">${ic('rep',null,18)}Report ready: ${h(P.scope)}</h2><span><button type="button" class="sub" id="rzip" style="margin:0 6px 0 0">${ic('dl','#fff',16)} Download everything (.zip)</button><button type="button" class="sub sec" id="rppt" style="margin:0">${ic('dl',null,16)} Slides (.pptx)</button></span></div><div class="legend" style="margin:0">${gr.length} graphs and ${sl.length} slides, each a PNG. Click any picture to download it. The PowerPoint file is fully editable: text, shapes, tables and real charts (right-click a chart, then Edit Data).</div></div>
+ $('rpout').innerHTML=`<div class="card" style="margin-top:12px"><div class="tools" style="margin:0 0 8px"><h2 data-ic="up" style="margin:0">${ic('rep',null,18)}Report ready: ${h(P.scope)}</h2><span><button type="button" class="sub" id="rzip" style="margin:0 6px 0 0">${ic('dl','#fff',16)} Download everything (.zip)</button><button type="button" class="sub sec" id="rppt" style="margin:0">${ic('dl',null,16)} Slides (.pptx)</button></span></div><div class="legend" id="rdl" style="margin:0 0 6px" role="status"></div><div class="legend" style="margin:0">${gr.length} graphs and ${sl.length} slides, each a PNG. Click any picture to download it. The PowerPoint file is fully editable: text, shapes, tables and real charts (right-click a chart, then Edit Data).</div></div>
  <h2 class="rsec">${ic('trend',null,18)}Graphs (PNG)</h2><div class="rg">${gr.map(card).join('')}</div><h2 class="rsec">${ic('list',null,18)}Slides (PNG)</h2><div class="rg">${sl.map(card).join('')}</div>`;
- $('rzip').onclick=async()=>{const b=$('rzip');b.disabled=true;try{const files=[];for(const i of RP.items)files.push({name:i.name,data:new Uint8Array(await i.blob.arrayBuffer())});files.push({name:`Biosecurity_${RP.tag}_Slides.pptx`,data:new Uint8Array(await (await mkPptx()).arrayBuffer())});save2(zipBlob(files),`Biosecurity_Report_${RP.tag}.zip`)}finally{b.disabled=false}};
- $('rppt').onclick=async()=>save2(await mkPptx(),`Biosecurity_${RP.tag}_Slides.pptx`)}
-function save2(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)}
+ const dmsg=(t,bad)=>{const e=$('rdl');if(e){e.textContent=t;e.style.color=bad?'#b3261e':'var(--mut)'}};
+ // build the PowerPoint; if something goes wrong (e.g. a photo cannot be read or the phone is low on memory) retry once without photos
+ const safePptx=async()=>{try{window.NOPHOTO=false;return{b:await mkPptx()}}catch(e){console.error(e);try{window.NOPHOTO=true;return{b:await mkPptx(),note:'The slides were built without the photos (they could not be loaded).'}}catch(e2){console.error(e2);return{err:e2}}finally{window.NOPHOTO=false}}};
+ $('rppt').onclick=async()=>{const b=$('rppt');b.disabled=true;dmsg('Preparing the slides… this can take up to a minute.');
+  try{const r=await safePptx();if(r.err)throw r.err;save2(r.b,`Biosecurity_${RP.tag}_Slides.pptx`);dmsg(r.note||'Slides downloaded: check your Downloads folder.')}
+  catch(e){dmsg('Could not build the slides ('+(e&&e.message||e)+'). Use "Download everything (.zip)" to get the pictures, or try again with fewer photos.',true)}finally{b.disabled=false}};
+ $('rzip').onclick=async()=>{const b=$('rzip');b.disabled=true;dmsg('Preparing the download… this can take up to a minute.');
+  try{const files=[];for(const i of RP.items)files.push({name:i.name,data:new Uint8Array(await i.blob.arrayBuffer())});
+   const r=await safePptx();if(r.b)files.push({name:`Biosecurity_${RP.tag}_Slides.pptx`,data:new Uint8Array(await r.b.arrayBuffer())});
+   save2(zipBlob(files),`Biosecurity_Report_${RP.tag}.zip`);dmsg(r.err?'The pictures were downloaded, but the PowerPoint could not be built ('+(r.err.message||r.err)+').':(r.note||'Download started: check your Downloads folder.'),!!r.err)}
+  catch(e){dmsg('Could not prepare the download ('+(e&&e.message||e)+'). Click any picture to save it on its own.',true)}finally{b.disabled=false}};}
+function save2(blob,name){const a=document.createElement('a'),u=URL.createObjectURL(blob);a.href=u;a.download=name;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),120000)}
 function rptSync(){const d=$('rpt').value==='day';$('rpwb').classList.toggle('hide',d);$('rpdb').classList.toggle('hide',!d)}
 $('rpt').onchange=rptSync;$('rpgo').onclick=genReport;
 

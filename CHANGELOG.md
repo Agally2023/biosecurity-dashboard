@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.3 (22 Oct 2026)
+- Dashboard graphs now use the Victory Farms report layout: green title with a rule, VF logo and "Victory Farms Confidential" footer, same as the slides.
+- Slide and zip downloads: a visible "Preparing…" message and clear error text; if the photos cannot be loaded the slides are built without them; the zip always includes the pictures; the old report is cleared while a new one is built.
+
 ## 1.9.2 (22 Oct 2026)
 - Slide deck: the overall-by-week line is drawn as its own continuous series, so it stays connected across weeks without data in PowerPoint, Google Slides and other viewers.
 
