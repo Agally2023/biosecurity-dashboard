@@ -39,8 +39,8 @@
   ],
   "shortcuts": [
     {
-      "name": "Log a check",
-      "short_name": "Log",
+      "name": "Audit",
+      "short_name": "Audit",
       "url": "./index.html?tab=f",
       "icons": [
         {
@@ -72,5 +72,5 @@
       ]
     }
   ],
-  "version": "1.8.0"
+  "version": "1.9.0"
 }

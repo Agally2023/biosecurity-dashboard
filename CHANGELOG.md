@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.9.0 (22 Oct 2026)
+- The "Log a check" tab is now **Audit**; the word "log" is removed from the app, reports, exports and file names (activity history, "Audited by", Audit CSV).
+- Hand Washing Compliance and Foot Dipping Compliance (counted people) no longer need photo evidence: no photo warning, no photo-evidence slides, and they are left out of the photo-evidence percentages.
+- Slides (.pptx) are now fully editable: real PowerPoint charts with their data behind them (right-click > Edit Data), editable tables, text and shapes on the Victory Farms layout. Photos remain pictures.
+
 ## 1.8.0 (21 Oct 2026)
 - Admin tab: Remove user (permanent). Past entries and activity stay under the person's username; you cannot remove yourself or the last active administrator.
 
