@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.2 (22 Oct 2026)
+- Slide deck: the overall-by-week line is drawn as its own continuous series, so it stays connected across weeks without data in PowerPoint, Google Slides and other viewers.
+
 ## 1.9.1 (22 Oct 2026)
 - Slide deck: the overall rating by week is one connected line with a shaded area and the selected week enlarged, matching the PNG (no more broken line across weeks without data).
 
