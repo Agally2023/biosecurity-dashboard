@@ -291,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.4',APP_DATE='22 Oct 2026';
+const APP_VERSION='1.9.5',APP_DATE='22 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -905,15 +905,19 @@ async function callClaude(images){
  try{sample=window.claude?await window.claude.use('sample'):null}catch(e){}
  if(sample){const caps=await sample.limits().catch(()=>null);
   if(caps&&caps.images)return sample.json(prompt,{images:images.slice(0,Math.min(4,caps.images.maxCount||4)),modelTier:'default'});
-  if(!CFG.DATA_URL)throw{code:'noimages'}}
+  if(!CFG.DATA_URL&&!SB())throw{code:'noimages'}}
+ if(SB()){let r,j;
+  try{r=await sbF('/functions/v1/analyze-photo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,images:await Promise.all(images.slice(0,4).map(b64))})})}catch(e){throw{code:'network'}}
+  try{j=await r.json()}catch(e){throw{code:r.status===404?'notdeployed':'badjson'}}
+  if(!j||!j.ok)throw{code:(j&&j.error)||'backend',message:(j&&j.message)||''};return j.result}
  if(CFG.DATA_URL){let r,j;
   try{r=await fetch(CFG.DATA_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({analyze:{prompt,images:await Promise.all(images.slice(0,4).map(b64)),code:CFG.AI_CODE||''}})})}catch(e){throw{code:'network'}}
   try{j=await r.json()}catch(e){throw{code:'badjson'}}
   if(!j||!j.ok)throw{code:(j&&j.error)||'backend',message:(j&&j.message)||''};return j.result}
  throw{code:'unavailable'}}
 const AIERR={unavailable:'Claude analysis is available when this page is opened inside Claude, or when your backend has an Anthropic API key (see the setup steps).',not_granted:'Claude access was declined for this page.',rate_limited:'Too many requests or your Claude usage limit was reached. Try again later.',
- image_rejected:'Claude could not read that picture. Try a different one.',nokey:'The backend has no ANTHROPIC_API_KEY yet (Apps Script > Project Settings > Script properties).',cap:'The daily Claude analysis limit was reached. Try again tomorrow or ask the admin to raise it.',
- code:'The access code is missing or wrong.',api:'The Claude service returned an error. Try again.',noimages:'This Claude viewer cannot send pictures yet. Use the hosted page with the backend API key, or open the artifact in the Claude web or mobile app.',network:'Could not reach the backend. Check DATA_URL ends in /exec, the deployment access is Anyone, and you deployed a new version.',badjson:'The backend did not answer correctly. It is probably an old version: Deploy > Manage deployments > Edit > New version.',bad:'The backend rejected the request. It may be an old version: paste the latest Backend.gs and deploy a new version.',
+ image_rejected:'Claude could not read that picture. Try a different one.',nokey:'The backend is installed but has no Anthropic key yet. The administrator adds it once in Supabase: Edge Functions > Secrets > ANTHROPIC_API_KEY.',notdeployed:'The Claude backend (analyze-photo) is not installed on this Supabase project.',login:'Please sign in again.',forbidden:'Only active editors and administrators can use Claude analysis.',cap:'The daily Claude analysis limit was reached. Try again tomorrow or ask the admin to raise it.',
+ code:'The access code is missing or wrong.',api:'The Claude service returned an error. Try again.',noimages:'This Claude viewer cannot send pictures yet. Use the hosted page with the backend API key, or open the artifact in the Claude web or mobile app.',network:'Could not reach the backend. Check your internet connection and try again.',badjson:'The backend did not answer correctly. It is probably an old version: Deploy > Manage deployments > Edit > New version.',bad:'The backend rejected the request. It may be an old version: paste the latest Backend.gs and deploy a new version.',
  parse:'Claude replied in an unexpected format. Tap Analyze to try again.',invalid_json:'Claude replied in an unexpected format. Tap Analyze to try again.'};
 const setAI=t=>{$('ai').innerHTML=t;$('ai').classList.remove('hide')};
 let AIR=null;
@@ -943,7 +947,10 @@ async function diag(){
  if(inV){let sample=null;try{sample=await window.claude.use('sample')}catch(e){}
   if(!sample)add(false,'Claude access is not available in this view. Open the artifact link in the Claude web or mobile app and allow access when asked.');
   else{const c=await sample.limits().catch(()=>null);add(!!(c&&c.images),c&&c.images?`Claude can read pictures here (up to ${c.images.maxCount}). The first Analyze asks you to allow it.`:'Claude is available here but this viewer cannot send pictures yet.')}}
- if(!CFG.DATA_URL)inV?add(null,'No backend link set (not needed inside Claude).'):add(false,'No backend link: DATA_URL is empty in the page, so Claude cannot be reached from a normal web page. See the setup steps.');
+ if(SB()){try{const r=await sbF('/functions/v1/analyze-photo',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({ping:1})});let j=null;try{j=await r.json()}catch(e){}
+   if(r.status===404)add(false,AIERR.notdeployed);else if(!j)add(false,AIERR.badjson);else if(j.ok&&j.live)add(true,`Backend and Anthropic key work (model ${j.model}). Analyses left today for you: ${j.left}.`);
+   else add(false,AIERR[j.error]||('The Claude API replied: '+(j.message||j.error)))}catch(e){add(false,AIERR.network)}}
+ else if(!CFG.DATA_URL)inV?add(null,'No backend link set (not needed inside Claude).'):add(false,'No backend link: DATA_URL is empty in the page, so Claude cannot be reached from a normal web page. See the setup steps.');
  else{try{const r=await fetch(CFG.DATA_URL,{method:'POST',headers:{'Content-Type':'text/plain'},body:JSON.stringify({analyze:{ping:'live',code:CFG.AI_CODE||''}})});let j=null;try{j=await r.json()}catch(e){}
    if(!j)add(false,AIERR.badjson);else if(j.error==='bad')add(false,AIERR.bad);else if(j.error==='code')add(false,AIERR.code);else if(j.error==='nokey')add(false,AIERR.nokey);
    else if(j.ok===false)add(false,'The Claude API replied: '+(j.message||j.error));else if(j.ok&&j.live)add(true,`Backend and API key work (model ${j.model}). Analyses left today: ${j.left}.`);else add(false,AIERR.badjson)}
@@ -1393,7 +1400,7 @@ function showTab(t){if(t==='f'&&ME&&ME.role==='viewer')t='d';if(t==='a'&&SB()&&!
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 // ---------- admin: users and activity log ----------
 let AD={ready:false,off:0,users:[]};
-const ACT={login:'Signed in',logout:'Signed out',signup:'Created account',entry_added:'Added entry',entry_edited:'Edited entry',entry_deleted:'Deleted entry',photo_added:'Added photo',photo_deleted:'Deleted photo',export_csv:'Exported CSV',report_generated:'Generated report',password_changed:'Changed password',user_status_changed:'Changed account status',user_role_changed:'Changed role',user_created:'Added user',import_replaced:'Updated dates from Excel',data_deleted:'Deleted data',password_reset_by_admin:'Reset a password',user_deleted:'Removed user'};
+const ACT={login:'Signed in',logout:'Signed out',signup:'Created account',entry_added:'Added entry',entry_edited:'Edited entry',entry_deleted:'Deleted entry',photo_added:'Added photo',photo_deleted:'Deleted photo',photo_analyzed:'Claude photo analysis',export_csv:'Exported CSV',report_generated:'Generated report',password_changed:'Changed password',user_status_changed:'Changed account status',user_role_changed:'Changed role',user_created:'Added user',import_replaced:'Updated dates from Excel',data_deleted:'Deleted data',password_reset_by_admin:'Reset a password',user_deleted:'Removed user'};
 const fdt=x=>{const d=new Date(x);return isNaN(d)?'':d.toLocaleString([],{dateStyle:'medium',timeStyle:'short'})};
 function detTxt(a,d){d=d||{};const j=(...v)=>v.filter(x=>x!=null&&x!=='').join(' · ');
  if(a==='entry_added')return d.count>1?`${d.count} entries (${d.first_date||''} to ${d.last_date||''})`:j(d.date,d.time,d.location,d.item,d.rating||(d.compliance!=null?d.compliance+'%':''));

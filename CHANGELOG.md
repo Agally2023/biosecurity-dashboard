@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.5 (22 Oct 2026)
+- Claude photo analysis now has its own backend on Supabase (Edge Function `analyze-photo`, source in `supabase/functions/`). The Anthropic key is stored only as a Supabase secret, never in the page. Only active editors and admins can use it, with a daily limit per user, and each use appears in Activity as "Claude photo analysis".
+- "Test Claude connection" checks the new backend.
+
 ## 1.9.4 (22 Oct 2026)
 - Audit form: auditors can key in a percent (0-100) for any Good/Average/Bad item; it selects the matching rating (Good 80-100, Average 67-79, Bad 0-66) and is recorded as that rating.
 - Fixed: pressing Review reset the rating to Good. The chosen rating is now kept.
