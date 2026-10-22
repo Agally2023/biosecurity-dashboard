@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.1 (22 Oct 2026)
+- Slide deck: the overall rating by week is one connected line with a shaded area and the selected week enlarged, matching the PNG (no more broken line across weeks without data).
+
 ## 1.9.0 (22 Oct 2026)
 - The "Log a check" tab is now **Audit**; the word "log" is removed from the app, reports, exports and file names (activity history, "Audited by", Audit CSV).
 - Hand Washing Compliance and Foot Dipping Compliance (counted people) no longer need photo evidence: no photo warning, no photo-evidence slides, and they are left out of the photo-evidence percentages.
