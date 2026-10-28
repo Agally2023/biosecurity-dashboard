@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.6 (28 Oct 2026)
+- Overall rating by week (dashboard, PNG report and slide): removed the Good 80% / Bad < 67% reference lines and their labels; the line is now thin and smooth with no dots (values still shown above each week). Y axis: overall rating; X axis: week.
+
 ## 1.9.5 (22 Oct 2026)
 - Claude photo analysis now has its own backend on Supabase (Edge Function `analyze-photo`, source in `supabase/functions/`). The Anthropic key is stored only as a Supabase secret, never in the page. Only active editors and admins can use it, with a daily limit per user, and each use appears in Activity as "Claude photo analysis".
 - "Test Claude connection" checks the new backend.
