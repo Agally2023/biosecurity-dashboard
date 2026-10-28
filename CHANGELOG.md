@@ -1,5 +1,8 @@
 # Changelog
 
+## Pump dashboard (28 Oct 2026)
+- Added `pumps/index.html`: Pump, Power & Water dashboard connected to the same Supabase project (table `pump_shifts`). Operator names in the built-in sample data are replaced by Operator A-D.
+
 ## 1.9.7 (28 Oct 2026)
 - All spreadsheet downloads (audit export, filtered view, activity history, backup before deleting) are now Excel (.xlsx) files in the Victory Farms XLS template format: gridlines off, title in Calibri 22 bold, "Victory Farms" and date, navy header row, light band row, blue hard-coded values and black formulas, negatives in ( ), % with one decimal, dd/mm/yyyy dates, units in column headings, total rows, fish logo top right, landscape fit-to-width print setup with the "Confidential" footer (file name and page numbers).
 - The Import data feature reads these files back (also keeps Good/Average/Bad rows that have no percent).
