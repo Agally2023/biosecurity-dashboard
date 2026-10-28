@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.9.7 (28 Oct 2026)
+- All spreadsheet downloads (audit export, filtered view, activity history, backup before deleting) are now Excel (.xlsx) files in the Victory Farms XLS template format: gridlines off, title in Calibri 22 bold, "Victory Farms" and date, navy header row, light band row, blue hard-coded values and black formulas, negatives in ( ), % with one decimal, dd/mm/yyyy dates, units in column headings, total rows, fish logo top right, landscape fit-to-width print setup with the "Confidential" footer (file name and page numbers).
+- The Import data feature reads these files back (also keeps Good/Average/Bad rows that have no percent).
+
 ## 1.9.6 (28 Oct 2026)
 - Overall rating by week (dashboard, PNG report and slide): removed the Good 80% / Bad < 67% reference lines and their labels; the line is now thin and smooth with no dots (values still shown above each week). Y axis: overall rating; X axis: week.
 

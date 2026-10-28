@@ -200,7 +200,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <details class="card" id="rsl" open style="margin-top:8px;padding:0"><summary>Results for this filter <span id="rcount" class="chip" style="background:var(--p)"></span></summary>
 <div class="rin"><div class="tw" id="fsum"></div>
 <details id="ent"><summary>Matching entries <span id="ecount"></span></summary>
-<div class="tools" style="margin:6px 0"><span class="legend" style="margin:0">Newest first</span><button type="button" class="sub sec" id="fdl" style="margin:0;padding:6px 12px;font-size:13px">Download this view (CSV)</button></div>
+<div class="tools" style="margin:6px 0"><span class="legend" style="margin:0">Newest first</span><button type="button" class="sub sec" id="fdl" style="margin:0;padding:6px 12px;font-size:13px">Download this view (Excel)</button></div>
 <div class="tw" style="max-height:260px;overflow-y:auto" id="vt"></div></details></div></details>
 <div class="kpis">
 <div class="card kpi"><i class="ico" data-ic="gauge" data-s="22"></i><div><b id="k1">-</b><span>Overall score in this view (avg of 6 categories)</span></div></div>
@@ -230,13 +230,13 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div class="fg" style="margin-top:0"><div><label>Report type</label><select id="rpt"><option value="week">Weekly / period report</option><option value="day">Daily report</option></select></div><div id="rpwb"><label>Week</label><select id="rpw"></select></div><div id="rpdb" class="hide"><label>Day</label><input type="date" id="rpd"></div><div><label>Location</label><select id="rpl"></select></div>
 <div style="display:flex;align-items:flex-end"><label style="display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:13px;color:var(--ink)"><input type="checkbox" id="rpcat" checked style="width:auto"> Include slides for each category</label></div></div>
 <button type="button" class="sub" id="rpgo" style="display:inline-flex;gap:8px;align-items:center" data-ic="rep"> Generate report</button> <span id="rpst" class="legend"></span></div>
-<div class="card" style="margin-top:12px"><h2 data-ic="dl">Export data (CSV)</h2>
-<p class="legend" style="margin:0 0 10px">Download the audited checks as one CSV file that opens in Excel. Choose the period (leave both dates empty for everything), and optionally one location. Tick the box if you want the Score and Week columns as live Excel formulas; leave it empty for plain values.</p>
+<div class="card" style="margin-top:12px"><h2 data-ic="dl">Export data (Excel)</h2>
+<p class="legend" style="margin:0 0 10px">Download the audited checks as one Excel file in the Victory Farms template layout. Choose the period (leave both dates empty for everything), and optionally one location. Tick the box if you want the Score and Week columns as live Excel formulas; leave it empty for plain values.</p>
 <div class="fg" style="margin:0 0 8px"><div><label>From date</label><input type="date" id="exf"></div><div><label>To date</label><input type="date" id="ext"></div><div><label>Location</label><select id="exl"></select></div></div>
 <div id="exq" style="margin:0 0 6px;display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="sub sec" data-p="7" style="margin:0;padding:5px 11px;font-size:13px">Last 7 days</button><button type="button" class="sub sec" data-p="30" style="margin:0;padding:5px 11px;font-size:13px">Last 30 days</button><button type="button" class="sub sec" data-p="m" style="margin:0;padding:5px 11px;font-size:13px">This month</button><button type="button" class="sub sec" data-p="all" style="margin:0;padding:5px 11px;font-size:13px">All dates</button></div>
 <div id="exs" class="legend" style="margin:0 0 8px"></div>
 <label style="display:flex;gap:8px;align-items:center;margin:0 0 10px;font-size:13px"><input type="checkbox" id="rpf" style="width:auto"> Include Excel formulas in the Score and Week columns</label>
-<button type="button" class="sub" id="rpcsv" style="display:inline-flex;gap:8px;align-items:center" data-ic="dl"> Export CSV</button></div>
+<button type="button" class="sub" id="rpcsv" style="display:inline-flex;gap:8px;align-items:center" data-ic="dl"> Export Excel (.xlsx)</button></div>
 <div id="rpout"></div></section>
 <section id="a" class="hide adm" style="margin-top:14px"><div id="cmsg"></div><div class="legend" id="aver" style="margin:6px 2px"></div><div class="card" id="ucard">
 <h2 data-ic="user"> Users</h2><div class="legend">Approve new accounts, set roles and switch accounts off. Passwords are never visible to anyone, including you: they are stored only as secure hashes.</div>
@@ -246,11 +246,11 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div class="tw" id="ausers">Loading…</div>
 <h3>Activity history</h3><div class="legend">Every sign-in, sign-out, new entry, edit, delete, photo upload, export and account change, with the person and time.</div>
 <div class="fl"><div><label>Person</label><select id="alu"><option value="">Everyone</option></select></div><div><label>Action</label><select id="ala"><option value="">All actions</option></select></div>
-<div><label>From</label><input type="date" id="alf"></div><div><label>To</label><input type="date" id="alt"></div><button type="button" class="mini pri" id="alg">Apply</button><button type="button" class="mini" id="alr">Reset</button><button type="button" class="mini" id="ald">Download CSV</button></div>
+<div><label>From</label><input type="date" id="alf"></div><div><label>To</label><input type="date" id="alt"></div><button type="button" class="mini pri" id="alg">Apply</button><button type="button" class="mini" id="alr">Reset</button><button type="button" class="mini" id="ald">Download Excel</button></div>
 <div class="tw" id="alog">Loading…</div><div style="margin-top:8px"><button type="button" class="mini" id="alm" style="display:none">Load more</button> <span class="legend" id="alc"></span></div>
 </div>
 <div class="card" id="dcard" style="margin-top:12px"><h2 data-ic="alert"> Clear data</h2>
-<p class="legend" style="margin:0 0 8px">Permanently delete audited checks for a period. A backup CSV of the deleted rows downloads first, and the deletion is recorded in the activity history. Evidence photos are not deleted.</p>
+<p class="legend" style="margin:0 0 8px">Permanently delete audited checks for a period. A backup Excel file of the deleted rows downloads first, and the deletion is recorded in the activity history. Evidence photos are not deleted.</p>
 <div class="fl"><div><label>From</label><input type="date" id="dx-f"></div><div><label>To</label><input type="date" id="dx-t"></div><div><label>Location</label><select id="dx-l"></select></div>
 <button type="button" class="mini" id="dx-1">Same day</button><button type="button" class="mini" id="dx-all">All dates</button></div>
 <div id="dx-s" class="legend" style="margin:0 0 6px"></div>
@@ -291,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.6',APP_DATE='22 Oct 2026';
+const APP_VERSION='1.9.7',APP_DATE='28 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -619,7 +619,7 @@ function drawView(rows,vr,demo){
 const wkd2=w=>{const d=new Date(WK0+(w-29)*7*DAY+6*DAY);return d.getUTCDate()+' '+MON[d.getUTCMonth()]};
 [['fwk','w'],['floc','l'],['fcat','c']].forEach(([id,k])=>$(id).onchange=e=>{F[k]=e.target.value;draw()});
 $('fres').onclick=()=>{F={w:'all',l:'all',c:'all'};draw()};
-$('fdl').onclick=()=>exportCsv(false,VIEW.map(r=>r.raw));
+$('fdl').onclick=()=>exportXlsx(false,VIEW.map(r=>r.raw)).catch(e=>note('Could not build the Excel file: '+(e.message||e)));
 function drawWeekly(rows,demo){
  const W=weekly(rows);$('ovr').innerHTML=overallChart(W);
  $('clg').innerHTML='<strong style="color:var(--ink);margin-right:2px">Key:</strong> '+CORE.map(g=>`<span><i style="background:${CC[g]}"></i>${ic(CI[g],CC[g],14)}${h(g)}</span>`).join('');
@@ -685,7 +685,7 @@ async function confirmSave(raw){
  catch(e){$('fmsg').textContent=`Check saved, but photo ${n+1} could not be stored (storage may be full). Remove it and try again.`;STG.splice(0,n);drawStage()}
  $('sb').disabled=false;$('cx').disabled=false}
 
-// ---------- CSV import / export ----------
+// ---------- import (CSV or Excel) / Excel export ----------
 function parseCsv(t){const R=[];let r=[],c='',q=false;t=t.replace(/^\ufeff/,'');
  for(let i=0;i<t.length;i++){const ch=t[i];
   if(q){if(ch=='"'){if(t[i+1]=='"'){c+='"';i++}else q=false}else c+=ch}
@@ -697,7 +697,7 @@ function stage(text,label){
  const R=parseCsv(text||'');if(R.length<2)return $('ipv').textContent='No rows found. Check the file is a CSV with a header row.';
  const H=R.shift().map(x=>x.trim()),col=n=>H.findIndex(x=>x.toLowerCase().startsWith(n.toLowerCase()));
  const ix=Object.fromEntries(['Date','Time','Location','Category','Item','Rating','Compliance','Source','Notes'].map(n=>[n,col(n)]));
- if(ix.Date<0||ix.Item<0)return $('ipv').textContent='This does not look like an audit CSV: it needs Date and Item columns (use History_Import.csv or the values-only export).';
+ if(ix.Date<0||ix.Item<0)return $('ipv').textContent='This does not look like an audit CSV: it needs Date and Item columns (use a file exported from this app).';
  const g=(r,n)=>ix[n]<0?'':(r[ix[n]]||'').trim();
  const list=R.map(r=>({Date:g(r,'Date').slice(0,10),Time:g(r,'Time'),Location:g(r,'Location'),Category:g(r,'Category'),Item:g(r,'Item'),Rating:g(r,'Rating'),'Compliance %':g(r,'Compliance'),Source:g(r,'Source'),Notes:g(r,'Notes')})).filter(r=>/^\d{4}-\d{2}-\d{2}$/.test(r.Date)&&r.Item&&(r.Rating||r['Compliance %']!==''));
  if(!list.length)return $('ipv').textContent='No valid rows found (each row needs a date as YYYY-MM-DD, an item, and a rating or compliance %).';
@@ -738,7 +738,7 @@ function mapLoc(raw){const s0=String(raw||'').trim().replace(/[‘’]/g,"'"),lo
  if(/general|farm/.test(low))return{loc:'General (Farm-wide)',note:''};return{loc:'Other',note:s0}}
 function mapItem(raw){const s0=String(raw||'').trim(),m=s0.match(/^(.*?)\s*\((.*)\)\s*$/),base=(m?m[1]:s0).trim(),a=ITEM_ALIAS.find(x=>x[0].test(base));return{item:a?a[1]:base,note:m?s0:''}}
 // turns the Raw Audit Log table into log rows; rows without a date are ignored (the sheet keeps empty formula rows below the data)
-function xlRows(grids){const want=[['date',/^date$/i],['time',/^time$/i],['loc',/^location$/i],['cat',/^category$/i],['item',/^(metric|item)$/i],['pct',/^(reported\s*%|compliance\s*%?|reported)$/i]];
+function xlRows(grids){const want=[['date',/^date$/i],['time',/^time$/i],['loc',/^location$/i],['cat',/^category$/i],['item',/^(metric|item)$/i],['pct',/^(reported\s*%|compliance\s*(\(%\)|%)?|reported)$/i],['rat',/^rating$/i]];
  const pick=grids.find(g=>/raw audit/i.test(g.name))||grids.find(g=>g.grid.slice(0,10).some(r=>r&&r.some(c=>/^date$/i.test(String(c).trim()))&&r.some(c=>/^(metric|item)$/i.test(String(c).trim()))));
  if(!pick)throw new Error('Could not find a sheet called "Raw Audit" (or any sheet with Date and Metric columns).');
  const hr=pick.grid.findIndex((r,i)=>i<15&&r&&r.some(c=>/^date$/i.test(String(c).trim())));if(hr<0)throw new Error('The sheet needs a header row with Date, Time, Location, Category, Metric and Reported %.');
@@ -747,7 +747,7 @@ function xlRows(grids){const want=[['date',/^date$/i],['time',/^time$/i],['loc',
  const out=[],skip={nodate:0,noval:0,badval:0,noitem:0};let n=0;
  for(let i=hr+1;i<pick.grid.length;i++){const r=pick.grid[i];if(!r)continue;const g=k=>ix[k]<0?'':r[ix[k]]??'',d=xlDate(g('date')),it=String(g('item')).trim(),pv=g('pct');
   if(!d){if(it||pv!=='')skip.nodate++;continue}if(!it){skip.noitem++;continue}
-  if(pv===''||pv==null){skip.noval++;continue}let p=typeof pv==='number'?pv:parseFloat(String(pv).replace('%',''));if(isNaN(p)){skip.badval++;continue}
+  if(pv===''||pv==null){const rt=ix.rat<0?'':String(g('rat')).trim(),bn=['Good','Average','Bad'].find(x=>x.toLowerCase()===rt.toLowerCase());if(bn){const L0=mapLoc(g('loc')),I0=mapItem(it);out.push({Date:d,Time:xlTime(g('time'),g('date')),Location:L0.loc,Category:String(g('cat')).trim(),Item:I0.item,Rating:bn,'Compliance %':'',Source:'',Notes:[L0.note,I0.note].filter((x,k,a)=>x&&a.indexOf(x)===k).join(' · ')});n++;continue}skip.noval++;continue}let p=typeof pv==='number'?pv:parseFloat(String(pv).replace('%',''));if(isNaN(p)){skip.badval++;continue}
   if(typeof pv==='number'&&p<=1)p*=100;if(p<0||p>100){skip.badval++;continue}
   const L=mapLoc(g('loc')),I=mapItem(it),notes=[L.note,I.note].filter((x,k,a)=>x&&a.indexOf(x)===k).join(' · ');
   out.push({Date:d,Time:xlTime(g('time'),g('date')),Location:L.loc,Category:String(g('cat')).trim(),Item:I.item,Rating:'','Compliance %':Math.round(p*100)/100,Source:'',Notes:notes});n++}
@@ -789,14 +789,76 @@ const esc=v=>{v=String(v??'');return /[",\n\r]/.test(v)?'"'+v.replace(/"/g,'""')
 const WI='"Water Accumulation on Floors"';
 const SC=n=>`=IFERROR(IF(G${n}<>"",G${n}/100,IF(F${n}="Good",1,IF(F${n}="Average",0.67,IF(F${n}="Bad",0,IF(F${n}="Yes",IF(E${n}=${WI},0,1),IF(F${n}="No",IF(E${n}=${WI},1,0),"")))))),"")`;
 const WK=n=>`=IFERROR(ISOWEEKNUM(A${n}),IFERROR(ISOWEEKNUM(DATEVALUE(A${n})),""))`;
-function exportCsv(withF,src){
+// ---------- Excel export in the Victory Farms XLS template layout (no libraries) ----------
+// Layout follows the VF template: gridlines off, title in C2 (Calibri 22 bold navy), "Victory Farms" and date, navy header row 6,
+// light band row 8, data from row 9, hard-coded values blue / formulas black, negatives in ( ), % with one decimal, dd/mm/yyyy,
+// fish logo top right (not distorted), landscape fit-to-width, "Confidential" footer with file name and page numbers.
+const xe=s=>XE(String(s??'').replace(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/g,''));
+const xCol=i=>{let s='';for(i++;i>0;i=Math.floor((i-1)/26))s=String.fromCharCode(65+(i-1)%26)+s;return s};
+const xSerD=s=>{const m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/);return m?Date.UTC(+m[1],+m[2]-1,+m[3])/864e5+25569:null};
+const xSerT=s=>{const m=String(s||'').match(/^(\d{1,2}):(\d{2})/);return m?(+m[1]*60+ +m[2])/1440:null};
+const xSerDT=v=>{const d=new Date(v);return isNaN(d)?null:(d.getTime()-d.getTimezoneOffset()*6e4)/864e5+25569};
+const XNF='<numFmts count="5"><numFmt numFmtId="164" formatCode="dd/mm/yyyy"/><numFmt numFmtId="165" formatCode="hh:mm"/><numFmt numFmtId="166" formatCode="#,##0.0%;\\(#,##0.0\\)%"/><numFmt numFmtId="167" formatCode="#,##0;\\(#,##0\\)"/><numFmt numFmtId="168" formatCode="dd/mm/yyyy\\ hh:mm"/></numFmts>';
+// [numFmt, font, fill, border, align]
+const XS=[[0,0,0,0,''],[0,1,0,0,''],[0,0,0,0,'left'],[164,0,0,0,'left'],[0,2,2,0,'left'],[0,2,2,0,'right'],[0,4,3,0,'left'],[0,0,3,0,''],[0,0,0,0,'left'],
+ [164,3,0,0,'right'],[165,3,0,0,'right'],[166,3,0,0,'right'],[167,3,0,0,'right'],[168,3,0,0,'right'],[166,0,0,0,'right'],[167,0,0,0,'right'],[0,0,0,1,'left'],[167,0,0,1,'right'],[166,0,0,1,'right'],[0,0,0,1,'']];
+const XT={text:8,date:9,time:10,pct:11,int:12,dt:13},XF={pct:14,int:15},XTOT={int:17,pct:18};
+function xStyles(){const font=(b,sz,c)=>`<font>${b?'<b/>':''}<sz val="${sz}"/><color rgb="${c}"/><name val="Calibri"/><family val="2"/></font>`;
+ return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?><styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">'+XNF+
+ `<fonts count="5">${font(0,12,'FF000000')}${font(1,22,'FF002060')}${font(1,12,'FFFFFFFF')}${font(0,12,'FF0000FF')}${font(1,12,'FF000000')}</fonts>`+
+ '<fills count="4"><fill><patternFill patternType="none"/></fill><fill><patternFill patternType="gray125"/></fill><fill><patternFill patternType="solid"><fgColor rgb="FF002060"/><bgColor indexed="64"/></patternFill></fill><fill><patternFill patternType="solid"><fgColor rgb="FFD6E3FF"/><bgColor indexed="64"/></patternFill></fill></fills>'+
+ '<borders count="2"><border><left/><right/><top/><bottom/><diagonal/></border><border><left/><right/><top style="thin"><color auto="1"/></top><bottom/><diagonal/></border></borders>'+
+ '<cellStyleXfs count="1"><xf numFmtId="0" fontId="0" fillId="0" borderId="0"/></cellStyleXfs>'+
+ `<cellXfs count="${XS.length}">${XS.map(([n,f,l,b,a])=>`<xf numFmtId="${n}" fontId="${f}" fillId="${l}" borderId="${b}" xfId="0" applyNumberFormat="1" applyFont="1" applyFill="1" applyBorder="1" applyAlignment="1"><alignment${a?` horizontal="${a}"`:''} vertical="center"/></xf>`).join('')}</cellXfs>`+
+ '<cellStyles count="1"><cellStyle name="Normal" xfId="0" builtinId="0"/></cellStyles></styleSheet>'}
+// spec: {sheet,title,band,cols:[{h,w,t}],rows:[[value|{f,v}]],foot:[[label,value|{f,v},type]],formulaCols:[idx]}
+async function xBook(sp){
+ const enc=new TextEncoder(),C0=2,n=sp.cols.length,last=C0+n-1,R0=9,Rl=R0+sp.rows.length-1,NS='http://schemas.openxmlformats.org/spreadsheetml/2006/main',RN='http://schemas.openxmlformats.org/officeDocument/2006/relationships',XH='<?xml version="1.0" encoding="UTF-8" standalone="yes"?>';
+ const cell=(r,c,st,v)=>{const ref=xCol(c)+r;if(v==null||v==='')return `<c r="${ref}" s="${st}"/>`;
+  if(typeof v==='object')return typeof v.v==='number'?`<c r="${ref}" s="${st}"><f>${xe(v.f)}</f><v>${v.v}</v></c>`:`<c r="${ref}" s="${st}" t="str"><f>${xe(v.f)}</f><v>${xe(v.v)}</v></c>`;
+  return typeof v==='number'?`<c r="${ref}" s="${st}"><v>${v}</v></c>`:`<c r="${ref}" s="${st}" t="inlineStr"><is><t xml:space="preserve">${xe(v)}</t></is></c>`};
+ const row=(r,cells,ht)=>`<row r="${r}"${ht?` ht="${ht}" customHeight="1"`:''}>${cells}</row>`;
+ const rows=[];
+ rows.push(row(2,cell(2,C0,1,sp.title),29.25));
+ rows.push(row(3,cell(3,C0,0,'Victory Farms')));
+ rows.push(row(4,cell(4,C0,3,Math.floor(xSerD(today()))),16.9));
+ rows.push(row(6,sp.cols.map((k,i)=>cell(6,C0+i,i===0||['text'].includes(k.t)?4:5,k.h)).join(''),16.9));
+ rows.push(row(8,cell(8,C0,6,sp.band)+sp.cols.slice(1).map((k,i)=>cell(8,C0+1+i,7,'')).join(''),16.9));
+ sp.rows.forEach((r,j)=>{const rn=R0+j;rows.push(row(rn,sp.cols.map((k,i)=>{const v=r[i];const st=(v&&typeof v==='object')?(XF[k.t]||XT[k.t]):XT[k.t];return cell(rn,C0+i,k.t==='text'?8:st,v)}).join(''),16.9))});
+ const fr=Rl+1;(sp.foot||[]).forEach((f,j)=>{const rn=fr+j,b=j===0;
+  rows.push(row(rn,cell(rn,C0,b?16:8,f[0])+sp.cols.slice(1).map((k,i)=>i===0?cell(rn,C0+1,b?XTOT[f[2]]:XF[f[2]],f[1]):cell(rn,C0+1+i,b?19:0,'')).join(''),16.9))});
+ const lastRow=fr+(sp.foot||[]).length-1;
+ const colW=[3.2,3.2].concat(sp.cols.map(k=>k.w)),colsX=colW.map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('');
+ // logo: top right, keeps its proportions
+ let logo=null;try{const r=await fetch('assets/vf-fish.jpg');if(r.ok)logo=new Uint8Array(await r.arrayBuffer())}catch(e){}
+ const cx=751691,cy=Math.round(751691*501/521),lw=sp.cols[n-1].w,off=Math.max(0,Math.round((lw*8+5)*9525-cx-30000));
+ const drawing=logo?XH+`<xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main"><xdr:oneCellAnchor><xdr:from><xdr:col>${last}</xdr:col><xdr:colOff>${off}</xdr:colOff><xdr:row>0</xdr:row><xdr:rowOff>88668</xdr:rowOff></xdr:from><xdr:ext cx="${cx}" cy="${cy}"/><xdr:pic><xdr:nvPicPr><xdr:cNvPr id="2" name="Victory Farms logo" descr="Victory Farms logo"/><xdr:cNvPicPr><a:picLocks noChangeAspect="1"/></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip xmlns:r="${RN}" r:embed="rId1"/><a:stretch><a:fillRect/></a:stretch></xdr:blipFill><xdr:spPr><a:xfrm><a:off x="0" y="88668"/><a:ext cx="${cx}" cy="${cy}"/></a:xfrm><a:prstGeom prst="rect"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/></xdr:oneCellAnchor></xdr:wsDr>`:'';
+ const sheet=XH+`<worksheet xmlns="${NS}" xmlns:r="${RN}"><sheetPr><tabColor rgb="FFD6E3FF"/><pageSetUpPr fitToPage="1"/></sheetPr><dimension ref="A1:${xCol(last)}${lastRow}"/><sheetViews><sheetView showGridLines="0" tabSelected="1" zoomScale="85" zoomScaleNormal="85" workbookViewId="0"><pane ySplit="8" topLeftCell="A9" activePane="bottomLeft" state="frozen"/><selection pane="bottomLeft" activeCell="C9" sqref="C9"/></sheetView></sheetViews><sheetFormatPr defaultColWidth="10.97" defaultRowHeight="15"/><cols>${colsX}</cols><sheetData>${rows.join('')}</sheetData><pageMargins left="0.75" right="0.75" top="1" bottom="1" header="0.5" footer="0.5"/><pageSetup paperSize="9" orientation="landscape" fitToHeight="0"/><headerFooter><oddFooter>&amp;L&amp;"Calibri,Regular"&amp;K000000&amp;T&#10;&amp;D&amp;C&amp;"Calibri,Regular"&amp;K000000Confidential&#10;&amp;F&amp;R&amp;"Calibri,Regular"&amp;K000000Page &amp;P&#10;of &amp;N</oddFooter></headerFooter>${logo?'<drawing r:id="rId1"/>':''}</worksheet>`;
+ const sn=xe(sp.sheet),RT='http://schemas.openxmlformats.org/officeDocument/2006/relationships/';
+ const files=[['[Content_Types].xml',XH+`<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/>${logo?'<Default Extension="jpg" ContentType="image/jpeg"/>':''}<Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>${logo?'<Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/>':''}</Types>`],
+  ['_rels/.rels',XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RT}officeDocument" Target="xl/workbook.xml"/></Relationships>`],
+  ['xl/workbook.xml',XH+`<workbook xmlns="${NS}" xmlns:r="${RN}"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="28800" windowHeight="16000"/></bookViews><sheets><sheet name="${sn}" sheetId="1" r:id="rId1"/></sheets><definedNames><definedName name="_xlnm.Print_Area" localSheetId="0">'${sn}'!$B$1:$${xCol(last+1)}$${lastRow+1}</definedName><definedName name="_xlnm.Print_Titles" localSheetId="0">'${sn}'!$6:$6</definedName></definedNames><calcPr calcId="191029" fullCalcOnLoad="1"/></workbook>`],
+  ['xl/_rels/workbook.xml.rels',XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RT}worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="${RT}styles" Target="styles.xml"/></Relationships>`],
+  ['xl/styles.xml',xStyles()],['xl/worksheets/sheet1.xml',sheet]];
+ if(logo){files.push(['xl/worksheets/_rels/sheet1.xml.rels',XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RT}drawing" Target="../drawings/drawing1.xml"/></Relationships>`],['xl/drawings/drawing1.xml',drawing],
+  ['xl/drawings/_rels/drawing1.xml.rels',XH+`<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="${RT}image" Target="../media/image1.jpg"/></Relationships>`]);}
+ const data=files.map(([name,t])=>({name,data:enc.encode(t)}));if(logo)data.push({name:'xl/media/image1.jpg',data:logo});
+ return new Blob([zipBlob(data)],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'})}
+async function exportXlsx(withF,src){
  const list=(src||ROWS).filter(r=>norm(r)).sort((a,b)=>(a.Date+a.Time).localeCompare(b.Date+b.Time));
  if(!list.length)return note('No entries to export yet.');
- const out=[['Date','Time','Location','Category','Item','Rating','Compliance %','Score %','Week','Source','Notes']];
- list.forEach((r,i)=>{const n=i+2;out.push([String(r.Date).slice(0,10),r.Time,r.Location,r.Category,r.Item,r.Rating||'',r['Compliance %']??'',
-  withF?SC(n):score(r),withF?WK(n):wk(day(r.Date))%100,r.Source||'',txt(r.Notes)])});
- logEv('export_csv',{rows:list.length,period:EXN||'all dates',with_formulas:!!withF});const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+out.map(r=>r.map(esc).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));
- a.download=`Biosecurity_Hygiene_Audit_${EXN||today()}${src&&!EXN?'_filtered':''}${withF?'':'_values'}.csv`;document.body.appendChild(a);a.click();a.remove()}
+ const per=EXN?EXN.replace(/(\d{4})-(\d{2})-(\d{2})/g,'$3/$2/$1').replace('_to_',' to '):'All dates',R0=9,Rl=R0+list.length-1;
+ // columns: C Date, D Time, E Location, F Category, G Item, H Rating, I Compliance (%), J Score (%), K Week, L Source, M Notes
+ const SCf=n=>`IFERROR(IF(I${n}<>"",I${n},IF(H${n}="Good",1,IF(H${n}="Average",0.67,IF(H${n}="Bad",0,IF(H${n}="Yes",IF(G${n}=${WI},0,1),IF(H${n}="No",IF(G${n}=${WI},1,0),"")))))),"")`;
+ const rows=list.map((r,i)=>{const n=R0+i,c=r['Compliance %'],sc=score(r),w=wk(day(r.Date))%100;
+  return [xSerD(r.Date),xSerT(r.Time),r.Location||'',r.Category||'',r.Item||'',r.Rating||'',c===''||c==null||isNaN(+c)?null:+c/100,
+   withF?{f:SCf(n),v:typeof sc==='number'?sc:''}:(typeof sc==='number'?sc:null),withF?{f:`IFERROR(ISOWEEKNUM(C${n}),"")`.replace('ISOWEEKNUM','_xlfn.ISOWEEKNUM'),v:w}:w,r.Source||'',r.Notes||'']});
+ const sc=list.map(score).filter(x=>typeof x==='number'),avg=sc.length?sc.reduce((a,b)=>a+b,0)/sc.length:'';
+ const blob=await xBook({sheet:'Audit entries',title:'Audit entries',band:`Audit entries - ${per} - ${list.length} entries (ratings and scores in %)`,
+  cols:[{h:'Date',w:12,t:'date'},{h:'Time',w:9,t:'time'},{h:'Location',w:24,t:'text'},{h:'Category',w:22,t:'text'},{h:'Item',w:34,t:'text'},{h:'Rating',w:11,t:'text'},{h:'Compliance (%)',w:15,t:'pct'},{h:'Score (%)',w:11,t:'pct'},{h:'Week (no.)',w:11,t:'int'},{h:'Source',w:16,t:'text'},{h:'Notes',w:42,t:'text'}],
+  rows,foot:[['Total entries',{f:`COUNT(C${R0}:C${Rl})`,v:list.length},'int'],['Average score (%)',{f:`IFERROR(AVERAGE(J${R0}:J${Rl}),"")`,v:avg},'pct']]});
+ logEv('export_csv',{rows:list.length,period:EXN||'all dates',with_formulas:!!withF,format:'xlsx'});
+ save2(blob,`Biosecurity_Hygiene_Audit_${EXN||today()}${src&&!EXN?'_filtered':''}${withF?'':'_values'}.xlsx`)}
 let EXN='';
 const dOff=n=>{const d=new Date(Date.now()-new Date().getTimezoneOffset()*6e4-n*864e5);return d.toISOString().slice(0,10)};
 function exRows(){const f=$('exf').value,t=$('ext').value,l=$('exl').value;return ROWS.filter(r=>{const d=String(r.Date).slice(0,10);return(!f||d>=f)&&(!t||d<=t)&&(!l||r.Location===l)})}
@@ -806,7 +868,7 @@ $('exl').innerHTML='<option value="">All locations</option>'+LOCS.map(l=>`<optio
 ['exf','ext','exl'].forEach(i=>$(i).addEventListener('change',exSync));
 $('exq').addEventListener('click',e=>{const b=e.target.closest('button[data-p]');if(!b)return;const p=b.dataset.p;
  if(p==='all'){$('exf').value=$('ext').value=''}else if(p==='m'){$('exf').value=dOff(0).slice(0,8)+'01';$('ext').value=dOff(0)}else{$('exf').value=dOff(+p-1);$('ext').value=dOff(0)}exSync()});
-$('rpcsv').onclick=()=>{const f=$('exf').value,t=$('ext').value;if(f&&t&&f>t)return exSync();const a=exRows();if(!a.length)return exSync();EXN=(f||t)?(f||'start')+'_to_'+(t||'latest'):'';try{exportCsv($('rpf').checked,a)}finally{EXN=''}};
+$('rpcsv').onclick=()=>{const f=$('exf').value,t=$('ext').value;if(f&&t&&f>t)return exSync();const a=exRows();if(!a.length)return exSync();EXN=(f||t)?(f||'start')+'_to_'+(t||'latest'):'';exportXlsx($('rpf').checked,a).catch(e=>note('Could not build the Excel file: '+(e.message||e))).finally(()=>{EXN=''})};
 
 // ---------- evidence photos ----------
 let PH=[],STG=[];const OU={},ou=(k,b)=>OU[k]??(OU[k]=URL.createObjectURL(b));
@@ -1405,7 +1467,7 @@ function showTab(t){if(t==='f'&&ME&&ME.role==='viewer')t='d';if(t==='a'&&SB()&&!
 document.querySelectorAll('nav button').forEach(b=>b.onclick=()=>showTab(b.dataset.t));
 // ---------- admin: users and activity log ----------
 let AD={ready:false,off:0,users:[]};
-const ACT={login:'Signed in',logout:'Signed out',signup:'Created account',entry_added:'Added entry',entry_edited:'Edited entry',entry_deleted:'Deleted entry',photo_added:'Added photo',photo_deleted:'Deleted photo',photo_analyzed:'Claude photo analysis',export_csv:'Exported CSV',report_generated:'Generated report',password_changed:'Changed password',user_status_changed:'Changed account status',user_role_changed:'Changed role',user_created:'Added user',import_replaced:'Updated dates from Excel',data_deleted:'Deleted data',password_reset_by_admin:'Reset a password',user_deleted:'Removed user'};
+const ACT={login:'Signed in',logout:'Signed out',signup:'Created account',entry_added:'Added entry',entry_edited:'Edited entry',entry_deleted:'Deleted entry',photo_added:'Added photo',photo_deleted:'Deleted photo',photo_analyzed:'Claude photo analysis',export_csv:'Exported Excel file',report_generated:'Generated report',password_changed:'Changed password',user_status_changed:'Changed account status',user_role_changed:'Changed role',user_created:'Added user',import_replaced:'Updated dates from Excel',data_deleted:'Deleted data',password_reset_by_admin:'Reset a password',user_deleted:'Removed user'};
 const fdt=x=>{const d=new Date(x);return isNaN(d)?'':d.toLocaleString([],{dateStyle:'medium',timeStyle:'short'})};
 function detTxt(a,d){d=d||{};const j=(...v)=>v.filter(x=>x!=null&&x!=='').join(' · ');
  if(a==='entry_added')return d.count>1?`${d.count} entries (${d.first_date||''} to ${d.last_date||''})`:j(d.date,d.time,d.location,d.item,d.rating||(d.compliance!=null?d.compliance+'%':''));
@@ -1450,8 +1512,10 @@ async function loadLog(reset){if(reset){AD.off=0;$('alog').innerHTML='Loading…
 function adminInit(force){if(!ME||ME.role!=='admin')return;if(!$('ala').dataset.f){$('ala').innerHTML='<option value="">All actions</option>'+Object.entries(ACT).map(([k,v])=>`<option value="${k}">${h(v)}</option>`).join('');$('ala').dataset.f=1}
  if(AD.ready&&!force)return;AD.ready=true;loadUsers();loadLog(true)}
 $('alg').onclick=()=>loadLog(true);$('alr').onclick=()=>{['alu','ala','alf','alt'].forEach(i=>$(i).value='');loadLog(true)};$('alm').onclick=()=>loadLog(false);
-$('ald').onclick=async()=>{const out=[['When','User','Email','Action','Details']];for(let o=0;;o+=1000){const r=await sbF(logQ(o,1000));if(!r.ok)return alert('Could not download the audit history.');const j=await r.json();j.forEach(x=>out.push([new Date(x.at).toLocaleString(),x.username||'',x.email||'',ACT[x.action]||x.action,txt(detTxt(x.action,x.details))]));if(j.length<1000)break}
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+out.map(r=>r.map(esc).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));a.download='Activity_history_'+today()+'.csv';document.body.appendChild(a);a.click();a.remove()};
+$('ald').onclick=async()=>{const rows=[];for(let o=0;;o+=1000){const r=await sbF(logQ(o,1000));if(!r.ok)return alert('Could not download the audit history.');const j=await r.json();j.forEach(x=>rows.push([xSerDT(x.at),x.username||'',x.email||'',ACT[x.action]||x.action,detTxt(x.action,x.details)||'']));if(j.length<1000)break}
+ if(!rows.length)return alert('No activity matches the filters.');const Rl=8+rows.length;
+ try{save2(await xBook({sheet:'Activity history',title:'Activity history',band:`Activity history - who signed in, edited or made entries - ${rows.length} events`,
+  cols:[{h:'When',w:18,t:'dt'},{h:'User',w:16,t:'text'},{h:'Email',w:30,t:'text'},{h:'Action',w:28,t:'text'},{h:'Details',w:70,t:'text'}],rows,foot:[['Total events',{f:`COUNT(C9:C${Rl})`,v:rows.length},'int']]}),'Activity_history_'+today()+'.xlsx')}catch(e){alert('Could not build the Excel file: '+(e.message||e))}};
 // admin: correct an entry
 $('vt').addEventListener('click',e=>{const b=e.target.closest('.ed');if(b&&ME&&ME.role==='admin'){const r=VIEW[+b.dataset.i];if(r)editEntry(r.raw)}});
 function editEntry(raw){const m=document.createElement('div');m.id='edm';const cur=yn2b(raw.Item,raw.Rating),opts=['Good','Average','Bad'],rg=n=>{const b=BANDS.find(x=>x[0]===n);return b?n+' ('+b[1]+')':n};
@@ -1475,13 +1539,16 @@ $('dx-l').innerHTML='<option value="">All locations</option>'+LOCS.map(l=>`<opti
 ['dx-f','dx-t','dx-l'].forEach(i=>$(i).addEventListener('change',dxSync));$('dx-c').addEventListener('input',dxSync);
 $('dx-1').onclick=()=>{const v=$('dx-f').value||$('dx-t').value||today();$('dx-f').value=$('dx-t').value=v;dxSync()};
 $('dx-all').onclick=()=>{const d=ROWS.map(r=>String(r.Date).slice(0,10)).sort();$('dx-f').value=d[0]||'';$('dx-t').value=d[d.length-1]||'';dxSync()};
-function backupCsv(list,tag){const H=['Date','Time','Location','Category','Item','Rating','Compliance %','Source','Notes','Audited by'],out=[H].concat(list.slice().sort((a,b)=>(String(a.Date)+a.Time).localeCompare(String(b.Date)+b.Time)).map(r=>[String(r.Date).slice(0,10),r.Time,r.Location,r.Category,r.Item,r.Rating||'',r['Compliance %']??'',r.Source||'',txt(r.Notes),r.By||'']));
- const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+out.map(r=>r.map(esc).join(',')).join('\r\n')],{type:'text/csv;charset=utf-8'}));a.download='Backup_'+tag+'.csv';document.body.appendChild(a);a.click();a.remove()}
-$('dx-bk').onclick=()=>{const a=dxRows();if(!a.length)return dxSync();backupCsv(a,$('dx-f').value+'_to_'+$('dx-t').value)};
+async function backupCsv(list,tag){const L=list.slice().sort((a,b)=>(String(a.Date)+a.Time).localeCompare(String(b.Date)+b.Time)),Rl=8+L.length;
+ const rows=L.map(r=>{const c=r['Compliance %'];return [xSerD(r.Date),xSerT(r.Time),r.Location||'',r.Category||'',r.Item||'',r.Rating||'',c===''||c==null||isNaN(+c)?null:+c/100,r.Source||'',r.Notes||'',r.By||'']});
+ save2(await xBook({sheet:'Audit backup',title:'Audit backup',band:`Audit backup - ${tag.replace(/(\d{4})-(\d{2})-(\d{2})/g,'$3/$2/$1').replace('_to_',' to ')} - ${L.length} entries`,
+  cols:[{h:'Date',w:12,t:'date'},{h:'Time',w:9,t:'time'},{h:'Location',w:24,t:'text'},{h:'Category',w:22,t:'text'},{h:'Item',w:34,t:'text'},{h:'Rating',w:11,t:'text'},{h:'Compliance (%)',w:15,t:'pct'},{h:'Source',w:16,t:'text'},{h:'Notes',w:42,t:'text'},{h:'Audited by',w:20,t:'text'}],
+  rows,foot:[['Total entries',{f:`COUNT(C9:C${Rl})`,v:L.length},'int']]}),'Backup_'+tag+'.xlsx')}
+$('dx-bk').onclick=()=>{const a=dxRows();if(!a.length)return dxSync();backupCsv(a,$('dx-f').value+'_to_'+$('dx-t').value).catch(e=>alert('Could not build the backup: '+(e.message||e)))};
 $('dx-go').onclick=async()=>{const a=dxRows(),f=$('dx-f').value,t=$('dx-t').value,l=$('dx-l').value;if(!a.length||$('dx-c').value.trim()!=='DELETE')return;
- if(!confirm(`Permanently delete ${a.length} entr${a.length===1?'y':'ies'} (${f} to ${t}${l?', '+l:''})?\n\nA backup CSV will download first. This cannot be undone.`))return;
+ if(!confirm(`Permanently delete ${a.length} entr${a.length===1?'y':'ies'} (${f} to ${t}${l?', '+l:''})?\n\nA backup Excel file will download first. This cannot be undone.`))return;
  $('dx-go').disabled=true;$('dx-o').style.color='';$('dx-o').textContent='Saving a backup, then deleting…';
- try{backupCsv(a,f+'_to_'+t);const r=await sbF('/rest/v1/rpc/delete_log_range',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p_from:f,p_to:t,p_location:l||null})});let j={};try{j=await r.json()}catch(e){}
+ try{await backupCsv(a,f+'_to_'+t);const r=await sbF('/rest/v1/rpc/delete_log_range',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({p_from:f,p_to:t,p_location:l||null})});let j={};try{j=await r.json()}catch(e){}
   if(!r.ok)throw new Error(j.message||('Error '+r.status));$('dx-c').value='';await load();if(AD.ready)loadLog(true);dxSync();$('dx-o').textContent=`Deleted ${j.deleted} entr${j.deleted===1?'y':'ies'}. The backup file was downloaded.`}
  catch(x){$('dx-o').style.color=COL.r;$('dx-o').textContent='Could not delete: '+x.message;dxSync()}};
 dxSync();
