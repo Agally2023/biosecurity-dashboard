@@ -174,7 +174,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
  #auth .box{border-radius:18px}
 }
 @media (display-mode:standalone){body{user-select:none;-webkit-user-select:none}input,textarea,select{user-select:text;-webkit-user-select:text}}
-</style></head><body>
+@media(max-width:900px){table.ut,.ut tbody{display:block;width:100%}.ut tr:first-child{display:none}.ut tr{display:block;border:1px solid #d6dde0;border-radius:10px;padding:8px 10px;margin:0 0 10px;background:#fff}.ut td{display:flex;justify-content:space-between;align-items:center;gap:10px;border:0;padding:4px 0;text-align:right;word-break:break-word}.ut td::before{content:attr(data-l);font-weight:700;color:#5b7068;font-size:12px;text-align:left;flex:0 0 auto}.ut td.ac{flex-wrap:wrap;justify-content:flex-end}.ut td.ac::before{display:none}}</style></head><body>
 <div id="auth" class="off"><div class="box">
 <div class="ahd"><img id="alogo" alt=""><div><b>Biosecurity &amp; Hygiene Audit</b><span>Victory Farms &middot; secure sign-in</span></div></div>
 <div id="av-tabs" class="atabs"><button type="button" id="t-in" class="on">Sign in</button><button type="button" id="t-up">Create account</button></div>
@@ -291,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.7',APP_DATE='28 Oct 2026';
+const APP_VERSION='1.9.8',APP_DATE='28 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -1486,10 +1486,10 @@ function detTxt(a,d){d=d||{};const j=(...v)=>v.filter(x=>x!=null&&x!=='').join('
 async function loadUsers(){const r=await sbF('/rest/v1/profiles?select=*&order=created_at.desc');if(!r.ok){$('ausers').textContent='Could not load users.';return}
  AD.users=await r.json();const pend=AD.users.filter(u=>u.status==='pending').length;$('apend').textContent=pend?'('+pend+')':'';
  const cur=$('alu').value;$('alu').innerHTML='<option value="">Everyone</option>'+AD.users.map(u=>`<option value="${h(u.id)}">${h(u.username)}</option>`).join('');$('alu').value=cur;
- $('ausers').innerHTML=`<table><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last sign-in</th><th>Sign-ins</th><th>Joined</th><th></th></tr>${AD.users.map(u=>{const me=u.id===ME.id;return `<tr><td><b>${h(u.username)}</b>${me?' (you)':''}</td><td>${h(u.email)}</td>
- <td><select data-id="${h(u.id)}" data-k="role" ${me?'disabled':''}>${['admin','editor','viewer'].map(x=>`<option${x===u.role?' selected':''}>${x}</option>`).join('')}</select></td><td><span class="st ${h(u.status)}">${h(u.status)}</span></td>
- <td>${u.last_login_at?h(fdt(u.last_login_at)):'never'}</td><td>${u.login_count}</td><td>${h(fdt(u.created_at))}</td>
- <td>${me?'':u.status==='pending'?`<button class="mini pri" data-id="${h(u.id)}" data-st="active">Approve</button><button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Reject</button>`:u.status==='active'?`<button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Disable</button>`:`<button class="mini" data-id="${h(u.id)}" data-st="active">Enable</button>`}${me?'':`<button class="mini" data-id="${h(u.id)}" data-pw="1" data-un="${h(u.username)}">Reset password</button><button class="mini bad" data-id="${h(u.id)}" data-del="1" data-un="${h(u.username)}" data-em="${h(u.email)}">Remove</button>`}</td></tr>`}).join('')}</table>`}
+ $('ausers').innerHTML=`<table class="ut"><tr><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Last sign-in</th><th>Sign-ins</th><th>Joined</th><th></th></tr>${AD.users.map(u=>{const me=u.id===ME.id;return `<tr><td data-l="Username"><b>${h(u.username)}</b>${me?' (you)':''}</td><td data-l="Email">${h(u.email)}</td>
+ <td data-l="Role"><select data-id="${h(u.id)}" data-k="role" ${me?'disabled':''}>${['admin','editor','viewer'].map(x=>`<option${x===u.role?' selected':''}>${x}</option>`).join('')}</select></td><td data-l="Status"><span class="st ${h(u.status)}">${h(u.status)}</span></td>
+ <td data-l="Last sign-in">${u.last_login_at?h(fdt(u.last_login_at)):'never'}</td><td data-l="Sign-ins">${u.login_count}</td><td data-l="Joined">${h(fdt(u.created_at))}</td>
+ <td class="ac">${me?'':u.status==='pending'?`<button class="mini pri" data-id="${h(u.id)}" data-st="active">Approve</button><button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Reject</button>`:u.status==='active'?`<button class="mini bad" data-id="${h(u.id)}" data-st="disabled">Disable</button>`:`<button class="mini" data-id="${h(u.id)}" data-st="active">Enable</button>`}${me?'':`<button class="mini" data-id="${h(u.id)}" data-pw="1" data-un="${h(u.username)}">Reset password</button><button class="mini bad" data-id="${h(u.id)}" data-del="1" data-un="${h(u.username)}" data-em="${h(u.email)}">Remove</button>`}</td></tr>`}).join('')}</table>`}
 async function setProf(id,patch){const r=await sbF('/rest/v1/profiles?id=eq.'+encodeURIComponent(id),{method:'PATCH',headers:{'Content-Type':'application/json',Prefer:'return=representation'},body:JSON.stringify(patch)});
  let j=[];try{j=await r.json()}catch(e){}if(!r.ok)throw new Error(j.message||('Error '+r.status));if(!j.length)throw new Error('Not allowed')}
 async function adminFn(body){const r=await sbF('/functions/v1/admin-users',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});let j={};try{j=await r.json()}catch(e){}if(!r.ok||j.error)throw new Error(j.error||('Error '+r.status));return j}
