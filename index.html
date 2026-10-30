@@ -291,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.9',APP_DATE='28 Oct 2026';
+const APP_VERSION='1.9.10',APP_DATE='28 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -1183,7 +1183,7 @@ function pointsSlide(P,g){
 function trendSlide(P){const s=contentSlide('Overall trend',P.T.ovTitle,P.scope),n=P.W.ws.length,v=P.W.ov.map(o=>o?o.s:null),si=P.T.hasSel?P.W.ws.findIndex(P.T.sel):-1;
  // one thin straight-edged line across weeks without data, small dots on the weeks that have data, values as labels
  const idx=v.map((x,i)=>x!=null?i:-1).filter(i=>i>=0),sh=v.map((x,i)=>{if(!idx.length||i<idx[0]||i>idx[idx.length-1])return null;if(x!=null)return x;let a=idx.filter(j=>j<i).pop(),b=idx.find(j=>j>i);return v[a]+(v[b]-v[a])*(i-a)/(b-a)});
- s.chart(60,140,1480,690,{kind:'line',span:true,cats:P.T.day?periodLabels(P):P.W.ws.map(String),catTitle:P.T.day?'':'Week',catSz:1200,series:[{name:'Trend line (joins weeks without data)',vals:sh,color:hx(GRN),line:true,thin:true,noMarker:true,hideKey:true},{name:'Overall rating',vals:v,color:hx(GRN),line:true,noLine:true,msize:4,labels:true}],legend:false},P.T.ovTitle);return s}
+ s.chart(60,140,1480,690,{kind:'line',span:true,cats:P.T.day?periodLabels(P):P.W.ws.map(String),catTitle:P.T.day?'':'Week',catSz:1200,series:[{name:'Shaded area (joins weeks without data)',vals:sh,color:hx(GRN),area:true,alpha:16,hideKey:true},{name:'Trend line (joins weeks without data)',vals:sh,color:hx(GRN),line:true,thin:true,noMarker:true,hideKey:true},{name:'Overall rating',vals:v,color:hx(GRN),line:true,noLine:true,msize:4,labels:true}],legend:false},P.T.ovTitle);return s}
 function locationsSlide(P){const s=contentSlide('Locations compared','Average rating by location',P.scope),v=LOCS.map(l=>avg(P.rw.filter(r=>r.loc===l)));
  s.chart(60,140,1480,640,{kind:'bar',cats:LOCS,catSz:1400,series:[{name:'Average rating',vals:v,color:hx(SKY),labels:true}],legend:false},'Average rating by location');
  s.box(60,786,1480,30,[{runs:[{t:'Green 80–100% · Amber 67–79% · Red 0–66%. All locations are shown for '+(P.T.day?'the selected day':P.week==='all'?'all weeks':'the selected week')+(P.loc!=='all'?' (the location filter does not apply to this chart)':'')+'.',sz:16,color:'595959'}]}],{ins:0,name:'Note'});return s}

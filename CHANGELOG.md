@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.10 (30 Oct 2026)
+- Slide: the light green shaded area is back under the overall rating line (editable chart).
+
 ## 1.9.9 (30 Oct 2026)
 - Overall rating by week (dashboard, PNG report and slide): straight sharp-edged line with thin small dots on each week that has data. The X axis is labelled only "Week", with the week numbers under it (no start dates).
 
