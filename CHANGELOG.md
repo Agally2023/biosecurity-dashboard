@@ -1,5 +1,8 @@
 # Changelog
 
+## 1.9.9 (30 Oct 2026)
+- Overall rating by week (dashboard, PNG report and slide): straight sharp-edged line with thin small dots on each week that has data. The X axis is labelled only "Week", with the week numbers under it (no start dates).
+
 ## 1.9.8 (29 Oct 2026)
 - Admin users list fits small screens: each user shows as a card with all details and buttons visible.
 

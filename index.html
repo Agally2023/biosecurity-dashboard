@@ -291,7 +291,7 @@ body.locked>header,body.locked>nav,body.locked>main{display:none}
 <div id="lb" class="lb hide"></div>
 </main>
 <script>
-const APP_VERSION='1.9.8',APP_DATE='28 Oct 2026';
+const APP_VERSION='1.9.9',APP_DATE='28 Oct 2026';
 
 // ===== CONFIG =====
 // SUPABASE_URL + SUPABASE_KEY (Project Settings > API: "Project URL" and the "anon public" key): entries and photos are stored permanently in your Supabase database (recommended).
@@ -556,7 +556,7 @@ function weekly(rows){
   const calc=cs.length?cs.reduce((x,y)=>x+y,0)/cs.length:null,typed=OVERALL_TYPED[w];
   return typed!=null?{s:typed,typed:true,calc}:calc!=null?{s:calc,typed:false,calc}:null});
  return{ws,by,ov}}
-const wkLabels=(ws,X,y,every,dE)=>ws.map((w,i)=>`<line x1="${X(i)}" x2="${X(i)}" y1="${y-11}" y2="${y-8}" stroke="${AXC}"/>`+(i%every?'':`<text class="ax" x="${X(i)}" y="${y+1}" font-size="9" text-anchor="middle">W${w}</text>`)+(i%(dE||every)?'':`<text class="ax" x="${X(i)}" y="${y+11}" font-size="7.5" text-anchor="middle">${wkd(w)}</text>`)).join('');
+const wkLabels=(ws,X,y,every,dE,nd)=>ws.map((w,i)=>`<line x1="${X(i)}" x2="${X(i)}" y1="${y-11}" y2="${y-8}" stroke="${AXC}"/>`+(i%every?'':`<text class="ax" x="${X(i)}" y="${y+1}" font-size="9" text-anchor="middle">${nd?w:'W'+w}</text>`)+(nd||i%(dE||every)?'':`<text class="ax" x="${X(i)}" y="${y+11}" font-size="7.5" text-anchor="middle">${wkd(w)}</text>`)).join('');
 // smooth curve through the points (monotone cubic, so it never bulges above or below the data)
 function monoPath(p){const n=p.length;if(n<2)return n?`M${p[0].x},${p[0].y}`:'';
  const dx=[],m=[],t=[];for(let i=0;i<n-1;i++){dx[i]=(p[i+1].x-p[i].x)||1e-6;m[i]=(p[i+1].y-p[i].y)/dx[i]}
@@ -564,12 +564,12 @@ function monoPath(p){const n=p.length;if(n<2)return n?`M${p[0].x},${p[0].y}`:'';
  for(let i=0;i<n-1;i++){if(m[i]===0){t[i]=t[i+1]=0}else{const a=t[i]/m[i],b=t[i+1]/m[i],q=a*a+b*b;if(q>9){const k=3/Math.sqrt(q);t[i]=k*a*m[i];t[i+1]=k*b*m[i]}}}
  let d=`M${p[0].x},${p[0].y}`;for(let i=0;i<n-1;i++){const h=dx[i]/3;d+=`C${p[i].x+h},${p[i].y+t[i]*h} ${p[i+1].x-h},${p[i+1].y-t[i+1]*h} ${p[i+1].x},${p[i+1].y}`}return d}
 // shared axes: Y ticks every 20%, dashed 80% / 67% reference lines, axis lines and axis titles
-function axes(Wd,H,l,r,t,b,Y,ytitle,noRef){
+function axes(Wd,H,l,r,t,b,Y,ytitle,noRef,xtitle){
  return `${[0,.2,.4,.6,.8,1].map(v=>`<line x1="${l}" x2="${Wd-r}" y1="${Y(v)}" y2="${Y(v)}" stroke="#e4ebe9"/><line x1="${l-4}" x2="${l}" y1="${Y(v)}" y2="${Y(v)}" stroke="${AXC}"/><text class="ax" x="${l-7}" y="${Y(v)+3}" font-size="9" text-anchor="end">${Math.round(v*100)}%</text>`).join('')}
  ${noRef?'':`<line x1="${l}" x2="${Wd-r}" y1="${Y(.8)}" y2="${Y(.8)}" stroke="${AXC}" stroke-dasharray="4 3"/><line x1="${l}" x2="${Wd-r}" y1="${Y(.67)}" y2="${Y(.67)}" stroke="${AXC}" stroke-dasharray="4 3"/>`}
  <line x1="${l}" x2="${l}" y1="${t}" y2="${H-b}" stroke="${AXC}" stroke-width="1.3"/><line x1="${l}" x2="${Wd-r}" y1="${H-b}" y2="${H-b}" stroke="${AXC}" stroke-width="1.3"/>
  <text class="ax" transform="rotate(-90)" x="${-(t+(H-t-b)/2)}" y="11" font-size="10" text-anchor="middle">${ytitle}</text>
- <text class="ax" x="${(l+Wd-r)/2}" y="${H-3}" font-size="10" text-anchor="middle">Week number (week start date below)</text>`}
+ <text class="ax" x="${(l+Wd-r)/2}" y="${H-3}" font-size="10" text-anchor="middle">${xtitle||'Week number (week start date below)'}</text>`}
 function overallChart(W){
  const{ws,ov}=W,n=ws.length,Wd=700,H=300,l=56,r=76,t=16,b=62,pad=n>1?16:0,X=i=>n>1?l+pad+i*(Wd-l-r-2*pad)/(n-1):(l+Wd-r)/2,Y=s=>t+(1-s)*(H-t-b);
  const pts=ov.map((o,i)=>o?{x:X(i),y:Y(o.s),o,w:ws[i]}:null).filter(Boolean);
@@ -577,13 +577,13 @@ function overallChart(W){
  const lastP=pts[pts.length-1],every=n>16?2:1,lab=n<=20;
  return `<div style="display:flex;gap:14px;align-items:baseline;flex-wrap:wrap;margin-bottom:4px"><span style="font-size:28px;font-weight:700;color:${INK}">${pct(lastP.o.s)}</span><span class="legend" style="margin:0">Week ${lastP.w} (from ${wkd(lastP.w)}), the latest week with data</span></div>
  <svg class="ch" viewBox="0 0 ${Wd} ${H}" role="img" aria-label="Overall hygiene and biosecurity rating by week, from week ${ws[0]}">
- ${axes(Wd,H,l,r,t,b,Y,'Overall rating (%)',true)}
- ${wkLabels(ws,X,H-b+22,every)}
+ ${axes(Wd,H,l,r,t-0,b,Y,'Overall rating (%)',true,'Week').replace(`y="${H-3}"`,`y="${H-b+36}"`)}
+ ${wkLabels(ws,X,H-b+22,every,0,1)}
  <defs><linearGradient id="ga" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${GRN}" stop-opacity=".30"/><stop offset="1" stop-color="${GRN}" stop-opacity="0"/></linearGradient></defs>
- <path fill="url(#ga)" d="${monoPath(pts)} L${pts[pts.length-1].x},${Y(0)} L${pts[0].x},${Y(0)} Z"/>
- <path fill="none" stroke="${GRN}" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" d="${monoPath(pts)}"/>
+ <path fill="url(#ga)" d="M${pts.map(q=>q.x+','+q.y).join(' L')} L${pts[pts.length-1].x},${Y(0)} L${pts[0].x},${Y(0)} Z"/>
+ <path fill="none" stroke="${GRN}" stroke-width="1.2" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" d="M${pts.map(q=>q.x+','+q.y).join(' L')}"/>
  ${pts.map(p=>{const tip=`Week ${p.w} (from ${wkd(p.w)}): ${pct(p.o.s)}`;
-  return `<g><title>${h(tip)}</title><circle cx="${p.x}" cy="${p.y}" r="9" fill="#fff" fill-opacity="0"/>${lab?`<text class="vl" x="${p.x}" y="${p.y-9}" font-size="9" text-anchor="middle">${Math.round(p.o.s*100)}%</text>`:''}</g>`}).join('')}
+  return `<g><title>${h(tip)}</title><circle cx="${p.x}" cy="${p.y}" r="9" fill="#fff" fill-opacity="0"/><circle cx="${p.x}" cy="${p.y}" r="2.2" fill="${GRN}"/>${lab?`<text class="vl" x="${p.x}" y="${p.y-9}" font-size="9" text-anchor="middle">${Math.round(p.o.s*100)}%</text>`:''}</g>`}).join('')}
  </svg>
  <div class="key"><span><i style="background:${GRN}"></i>Overall rating (average of the categories rated that week)</span></div>`}
 function catBars(g,W){
@@ -1095,7 +1095,7 @@ function chartXml(sp){
  const ser=(s,i,asLine,asArea)=>{const L=colL(i+1),vals=`<c:val><c:numRef><c:f>Sheet1!$${L}$2:$${L}$${n+1}</c:f><c:numCache><c:formatCode>${fmt}</c:formatCode><c:ptCount val="${n}"/>${s.vals.map((v,j)=>v==null?'':`<c:pt idx="${j}"><c:v>${+v}</c:v></c:pt>`).join('')}</c:numCache></c:numRef></c:val>`,
    tx=`<c:tx><c:strRef><c:f>Sheet1!$${L}$1</c:f><c:strCache><c:ptCount val="1"/><c:pt idx="0"><c:v>${XE(s.name)}</c:v></c:pt></c:strCache></c:strRef></c:tx>`,
    dl=s.labels?`<c:dLbls><c:numFmt formatCode="${fmt}" sourceLinked="0"/><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr>${txp(1200,'17302B').replace('b="0"','b="1"')}<c:dLblPos val="${asLine?'t':'outEnd'}"/><c:showLegendKey val="0"/><c:showVal val="1"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="0"/><c:showBubbleSize val="0"/></c:dLbls>`:`<c:dLbls><c:delete val="1"/></c:dLbls>`;
-  if(asLine&&!asArea)return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/>${tx}<c:spPr><a:ln w="${s.dash?19050:s.thin?15875:s.thick?38100:28575}" cap="rnd">${s.noLine?'<a:noFill/>':fillX(s.color)}${s.dash&&!s.noLine?'<a:prstDash val="dash"/>':''}<a:round/></a:ln></c:spPr><c:marker>${s.dash||s.noMarker?'<c:symbol val="none"/>':`<c:symbol val="circle"/><c:size val="8"/><c:spPr>${fillX(s.color)}<a:ln w="9525">${fillX('FFFFFF')}</a:ln></c:spPr>`}</c:marker>${s.selIdx!=null&&s.selIdx>=0?`<c:dPt><c:idx val="${s.selIdx}"/><c:marker><c:symbol val="circle"/><c:size val="14"/><c:spPr>${fillX(s.color)}<a:ln w="28575">${fillX('FFFFFF')}</a:ln></c:spPr></c:marker><c:bubble3D val="0"/></c:dPt>`:''}${dl}${catRef}${vals}<c:smooth val="${s.smooth?1:0}"/></c:ser>`;
+  if(asLine&&!asArea)return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/>${tx}<c:spPr><a:ln w="${s.dash?19050:s.thin?15875:s.thick?38100:28575}" cap="rnd">${s.noLine?'<a:noFill/>':fillX(s.color)}${s.dash&&!s.noLine?'<a:prstDash val="dash"/>':''}<a:round/></a:ln></c:spPr><c:marker>${s.dash||s.noMarker?'<c:symbol val="none"/>':`<c:symbol val="circle"/><c:size val="${s.msize||8}"/><c:spPr>${fillX(s.color)}<a:ln w="9525">${fillX('FFFFFF')}</a:ln></c:spPr>`}</c:marker>${s.selIdx!=null&&s.selIdx>=0?`<c:dPt><c:idx val="${s.selIdx}"/><c:marker><c:symbol val="circle"/><c:size val="14"/><c:spPr>${fillX(s.color)}<a:ln w="28575">${fillX('FFFFFF')}</a:ln></c:spPr></c:marker><c:bubble3D val="0"/></c:dPt>`:''}${dl}${catRef}${vals}<c:smooth val="${s.smooth?1:0}"/></c:ser>`;
   if(asArea)return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/>${tx}<c:spPr>${fillX(s.color,s.alpha||18)}<a:ln><a:noFill/></a:ln></c:spPr>${catRef}${vals}</c:ser>`;
   const dpt=(s.pointColors||[]).map((c,j)=>c?`<c:dPt><c:idx val="${j}"/><c:invertIfNegative val="0"/><c:bubble3D val="0"/><c:spPr>${fillX(c)}</c:spPr></c:dPt>`:'').join('');
   return `<c:ser><c:idx val="${i}"/><c:order val="${i}"/>${tx}<c:spPr>${fillX(s.color)}</c:spPr><c:invertIfNegative val="0"/>${dpt}${dl}${catRef}${vals}</c:ser>`};
@@ -1103,7 +1103,7 @@ function chartXml(sp){
  const areaX=areas.length?`<c:areaChart><c:grouping val="standard"/><c:varyColors val="0"/>${areas.map(([s,i])=>ser(s,i,true,true)).join('')}<c:axId val="111111"/><c:axId val="222222"/></c:areaChart>`:'';
  const barX=bars.length?`<c:barChart><c:barDir val="${horiz?'bar':'col'}"/><c:grouping val="clustered"/><c:varyColors val="0"/>${bars.map(([s,i])=>ser(s,i,false)).join('')}<c:gapWidth val="${horiz?45:60}"/><c:axId val="111111"/><c:axId val="222222"/></c:barChart>`:'';
  const lineX=lines.length?`<c:lineChart><c:grouping val="standard"/><c:varyColors val="0"/>${lines.map(([s,i])=>ser(s,i,true)).join('')}<c:marker val="1"/><c:axId val="111111"/><c:axId val="222222"/></c:lineChart>`:'';
- const axes=`<c:catAx><c:axId val="111111"/><c:scaling><c:orientation val="${horiz?'maxMin':'minMax'}"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz?'l':'b'}"/><c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln w="9525">${fillX('BFBFBF')}</a:ln></c:spPr>${txp(sp.catSz||1200,'404040')}<c:crossAx val="222222"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx>`+
+ const axes=`<c:catAx><c:axId val="111111"/><c:scaling><c:orientation val="${horiz?'maxMin':'minMax'}"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz?'l':'b'}"/>${sp.catTitle?`<c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1400" b="0">${fillX('595959')}</a:defRPr></a:pPr><a:r><a:rPr lang="en-GB" sz="1400" b="0">${fillX('595959')}</a:rPr><a:t>${XE(sp.catTitle)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title>`:''}<c:numFmt formatCode="General" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln w="9525">${fillX('BFBFBF')}</a:ln></c:spPr>${txp(sp.catSz||1200,'404040')}<c:crossAx val="222222"/><c:crosses val="autoZero"/><c:auto val="1"/><c:lblAlgn val="ctr"/><c:lblOffset val="100"/><c:noMultiLvlLbl val="0"/></c:catAx>`+
   `<c:valAx><c:axId val="222222"/><c:scaling><c:orientation val="minMax"/><c:max val="1"/><c:min val="0"/></c:scaling><c:delete val="0"/><c:axPos val="${horiz?'b':'l'}"/><c:majorGridlines><c:spPr><a:ln w="6350">${fillX('E4EBE9')}</a:ln></c:spPr></c:majorGridlines><c:numFmt formatCode="${fmt}" sourceLinked="0"/><c:majorTickMark val="none"/><c:minorTickMark val="none"/><c:tickLblPos val="nextTo"/><c:spPr><a:ln><a:noFill/></a:ln></c:spPr>${txp(1100)}<c:crossAx val="111111"/><c:crosses val="${horiz?'max':'autoZero'}"/><c:crossBetween val="between"/><c:majorUnit val="0.2"/></c:valAx>`;
  return XH+`<c:chartSpace ${NSC} ${NSA} ${NSR}><c:date1904 val="0"/><c:roundedCorners val="0"/><c:chart><c:autoTitleDeleted val="1"/><c:plotArea><c:layout/>${areaX}${barX}${lineX}${axes}<c:spPr><a:noFill/></c:spPr></c:plotArea>${sp.legend?`<c:legend><c:legendPos val="b"/>${sp.series.map((s,i)=>s.hideKey?`<c:legendEntry><c:idx val="${i}"/><c:delete val="1"/></c:legendEntry>`:'').join('')}<c:overlay val="0"/>${txp(1200,'404040')}</c:legend>`:''}<c:plotVisOnly val="1"/><c:dispBlanksAs val="${sp.span?'span':'gap'}"/></c:chart><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr><a:latin typeface="Calibri"/></a:defRPr></a:pPr><a:endParaRPr lang="en-GB"/></a:p></c:txPr><c:externalData r:id="rId1"><c:autoUpdate val="0"/></c:externalData></c:chartSpace>`}
 // the Excel sheet behind a chart, so "Edit Data" works in PowerPoint
@@ -1181,9 +1181,9 @@ function pointsSlide(P,g){
   s.chart(60,500,1480,322,{kind:'col',cats:CORE,catSz:1200,series:[{name:'Average rating',vals:CORE.map(k=>catStats(P,k).s),color:'0E812E',pointColors:CORE.map(k=>hx(CC[k])),labels:true}].concat(REFS(CORE.length)),legend:true},'Category scores')}
  return s}
 function trendSlide(P){const s=contentSlide('Overall trend',P.T.ovTitle,P.scope),n=P.W.ws.length,v=P.W.ov.map(o=>o?o.s:null),si=P.T.hasSel?P.W.ws.findIndex(P.T.sel):-1;
- // one thin smooth line across weeks without data, no dots; the values sit on the weeks as labels
+ // one thin straight-edged line across weeks without data, small dots on the weeks that have data, values as labels
  const idx=v.map((x,i)=>x!=null?i:-1).filter(i=>i>=0),sh=v.map((x,i)=>{if(!idx.length||i<idx[0]||i>idx[idx.length-1])return null;if(x!=null)return x;let a=idx.filter(j=>j<i).pop(),b=idx.find(j=>j>i);return v[a]+(v[b]-v[a])*(i-a)/(b-a)});
- s.chart(60,140,1480,690,{kind:'line',span:true,cats:periodLabels(P),catSz:1100,series:[{name:'Trend line (joins weeks without data)',vals:sh,color:hx(GRN),line:true,thin:true,smooth:true,noMarker:true,hideKey:true},{name:'Overall rating',vals:v,color:hx(GRN),line:true,noLine:true,noMarker:true,labels:true}],legend:false},P.T.ovTitle);return s}
+ s.chart(60,140,1480,690,{kind:'line',span:true,cats:P.T.day?periodLabels(P):P.W.ws.map(String),catTitle:P.T.day?'':'Week',catSz:1200,series:[{name:'Trend line (joins weeks without data)',vals:sh,color:hx(GRN),line:true,thin:true,noMarker:true,hideKey:true},{name:'Overall rating',vals:v,color:hx(GRN),line:true,noLine:true,msize:4,labels:true}],legend:false},P.T.ovTitle);return s}
 function locationsSlide(P){const s=contentSlide('Locations compared','Average rating by location',P.scope),v=LOCS.map(l=>avg(P.rw.filter(r=>r.loc===l)));
  s.chart(60,140,1480,640,{kind:'bar',cats:LOCS,catSz:1400,series:[{name:'Average rating',vals:v,color:hx(SKY),labels:true}],legend:false},'Average rating by location');
  s.box(60,786,1480,30,[{runs:[{t:'Green 80–100% · Amber 67–79% · Red 0–66%. All locations are shown for '+(P.T.day?'the selected day':P.week==='all'?'all weeks':'the selected week')+(P.loc!=='all'?' (the location filter does not apply to this chart)':'')+'.',sz:16,color:'595959'}]}],{ins:0,name:'Note'});return s}
@@ -1295,14 +1295,14 @@ async function slideCover(P){
  x.textBaseline='alphabetic';x.textAlign='left';x.fillStyle='#fff';x.font=fnt(72,700);x.fillText('Biosecurity & Hygiene Audit',90,700);
  x.font=fnt(34);x.fillStyle='#ffffffee';x.fillText(fit(x,P.scope,1400),90,760);x.font=fnt(24);x.fillStyle='#ffffffcc';x.fillText((P.T&&P.T.day?'Daily report':'Weekly report')+' · Generated '+stamp(),90,805);
  x.fillStyle=VFB;x.fillRect(90,830,150,6);x.font=fnt(16);x.fillStyle='#ffffffb0';x.textAlign='right';x.fillText('Victory Farms Confidential',1510,870);x.textAlign='left';return c}
-function plotAxes(x,P,ws,xs,box,ytitle,noRef){const{l,r,t,b}=box,Y=v=>t+(1-v)*(b-t);
+function plotAxes(x,P,ws,xs,box,ytitle,noRef,wkOnly){const{l,r,t,b}=box,Y=v=>t+(1-v)*(b-t);
  x.font=fnt(18);x.textAlign='right';x.lineWidth=1;
  [0,.2,.4,.6,.8,1].forEach(v=>{x.strokeStyle='#e4ebe9';x.beginPath();x.moveTo(l,Y(v));x.lineTo(r,Y(v));x.stroke();x.fillStyle=AXC;x.fillText(Math.round(v*100)+'%',l-12,Y(v)+6)});
  if(!noRef){x.setLineDash([9,7]);x.strokeStyle=AXC;x.lineWidth=1.6;[.8,.67].forEach(v=>{x.beginPath();x.moveTo(l,Y(v));x.lineTo(r,Y(v));x.stroke()});x.setLineDash([]);
  x.textAlign='left';x.fillStyle=AXC;x.font=fnt(17);x.fillText('Good 80%',r+10,Y(.8)+6);x.fillText('Bad < 67%',r+10,Y(.67)+6)}
  x.strokeStyle=AXC;x.lineWidth=2;x.beginPath();x.moveTo(l,t);x.lineTo(l,b);x.lineTo(r,b);x.stroke();
- x.textAlign='center';const every=ws.length>16?2:1;ws.forEach((w,i)=>{x.strokeStyle=AXC;x.lineWidth=1.5;x.beginPath();x.moveTo(xs(i),b);x.lineTo(xs(i),b+7);x.stroke();if(i%every===0){const sl_=P.T.hasSel&&P.T.sel(w);x.fillStyle=sl_?INK:AXC;x.font=fnt(18,sl_?700:400);x.fillText(P.T.l1(w),xs(i),b+30);x.font=fnt(15);x.fillStyle=AXC;x.fillText(P.T.l2(w),xs(i),b+50)}});
- x.font=fnt(20);x.fillStyle=AXC;x.fillText(P.T.xt,(l+r)/2,b+84);
+ x.textAlign='center';const every=ws.length>16?2:1;ws.forEach((w,i)=>{x.strokeStyle=AXC;x.lineWidth=1.5;x.beginPath();x.moveTo(xs(i),b);x.lineTo(xs(i),b+7);x.stroke();if(i%every===0){const sl_=P.T.hasSel&&P.T.sel(w);x.fillStyle=sl_?INK:AXC;x.font=fnt(18,sl_?700:400);const wo=wkOnly&&!P.T.day;x.fillText(wo?String(w):P.T.l1(w),xs(i),b+30);if(!wo){x.font=fnt(15);x.fillStyle=AXC;x.fillText(P.T.l2(w),xs(i),b+50)}}});
+ x.font=fnt(20);x.fillStyle=AXC;x.fillText(wkOnly&&!P.T.day?'Week':P.T.xt,(l+r)/2,b+(wkOnly&&!P.T.day?68:84));
  x.save();x.translate(46,(t+b)/2);x.rotate(-Math.PI/2);x.fillText(ytitle,0,0);x.restore();x.textAlign='left';return Y}
 function legendRow(x,items,Y){x.font=fnt(19);let w=0;items.forEach(it=>w+=(it.k==='dash'?34:20)+10+x.measureText(it.t).width+34);let X=800-w/2+17;
  items.forEach(it=>{if(it.k==='dash'){x.setLineDash([8,6]);x.strokeStyle=AXC;x.lineWidth=2;x.beginPath();x.moveTo(X,Y-6);x.lineTo(X+30,Y-6);x.stroke();x.setLineDash([]);X+=44}
@@ -1312,12 +1312,13 @@ const noData=(x,t)=>{x.fillStyle=AXC;x.font=fnt(30);x.textAlign='center';x.fillT
 async function chOverall(P){const{c,x}=await frame(P.T.ovTitle,P.scope,null,true);const{ws,ov}=P.W,n=ws.length,box={l:140,r:1440,t:190,b:690};
  const xs=i=>n>1?box.l+40+i*(box.r-box.l-80)/(n-1):(box.l+box.r)/2,pts=ov.map((o,i)=>o?{o,i,w:ws[i]}:null).filter(Boolean);
  if(!pts.length){noData(x);return c}
- const Y=plotAxes(x,P,ws,xs,box,'Overall rating (%)',true);
+ const Y=plotAxes(x,P,ws,xs,box,'Overall rating (%)',true,true);
  if(P.T.hasSel){const i=ws.findIndex(P.T.sel);if(i>=0){x.fillStyle='#0E812E18';rr(x,xs(i)-30,box.t-6,60,box.b-box.t+12,12);x.fill()}}
  const gr=x.createLinearGradient(0,box.t,0,box.b);gr.addColorStop(0,'#0E812E55');gr.addColorStop(1,'#0E812E08');const runs=[];pts.forEach(p=>{const r=runs[runs.length-1];if(r&&(!P.T.day||p.i===r[r.length-1].i+1))r.push(p);else runs.push([p])}); // daily line breaks on days with no checks
  const rp=r=>r.map(p=>({x:xs(p.i),y:Y(p.o.s)}));
- x.fillStyle=gr;runs.forEach(r=>{const q=rp(r);x.fill(new Path2D(monoPath(q)+`L${q[q.length-1].x},${box.b}L${q[0].x},${box.b}Z`))});
- x.strokeStyle=GRN;x.lineWidth=3;x.lineJoin='round';x.lineCap='round';runs.forEach(r=>{if(r.length>1)x.stroke(new Path2D(monoPath(rp(r))))});
+ x.fillStyle=gr;runs.forEach(r=>{const q=rp(r);x.fill(new Path2D('M'+q.map(a=>a.x+','+a.y).join('L')+`L${q[q.length-1].x},${box.b}L${q[0].x},${box.b}Z`))});
+ x.strokeStyle=GRN;x.lineWidth=2;x.lineJoin='miter';x.miterLimit=10;x.lineCap='butt';runs.forEach(r=>{if(r.length>1)x.stroke(new Path2D('M'+rp(r).map(a=>a.x+','+a.y).join('L')))});
+ pts.forEach(p=>{x.fillStyle=GRN;x.beginPath();x.arc(xs(p.i),Y(p.o.s),4,0,7);x.fill()});
  pts.forEach(p=>{const X=xs(p.i),y=Y(p.o.s),sel=P.T.hasSel&&P.T.sel(p.w);x.fillStyle=INK;x.font=fnt(sel?24:19,700);x.textAlign='center';x.fillText(pct(p.o.s),X,y-16);x.textAlign='left'});
  legendRow(x,[{c:GRN,t:'Overall rating (average of the categories rated that '+P.T.unit+')'}],800);return c}
 async function chCat(P,g){const col=CC[g],{c,x}=await frame(g+': '+P.T.per+' average rating',P.scope,{n:CI[g],col}),{ws}=P.W,n=ws.length,d=P.W.by[g],box={l:140,r:1440,t:190,b:690};
